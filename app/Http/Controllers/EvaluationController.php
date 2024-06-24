@@ -18,8 +18,15 @@ class EvaluationController extends Controller
         $cars = Car::all();
         $criteria = Criterion::with('subCriteria')->get();
 
+        $weights = [
+            'C1' => 0.35,
+            'C2' => 0.30,
+            'C3' => 0.15,
+            'C4' => 0.20,
+        ];
+
         $utilities = $this->calculateUtilities($cars, $criteria);
-        $rankings = $this->calculateRankings($utilities);
+        $rankings = $this->calculateRankings($utilities, $weights);
 
         return view('evaluation.index', compact('utilities', 'rankings'));
     }
@@ -29,32 +36,15 @@ class EvaluationController extends Controller
         $utilities = [];
         foreach ($cars as $car) {
             $utility = [
-                'nama' => $car->nama
+                'nama' => $car->nama,
+                'C1' => $this->calculateUtilityValue($car->harga, $criteria->firstWhere('kode', 'C1')->subCriteria, 'Cost'),
+                'C2' => $this->calculateUtilityValue($car->jumlah_seat, $criteria->firstWhere('kode', 'C2')->subCriteria, 'Benefit'),
+                'C3' => $this->calculateUtilityValue($car->warna, $criteria->firstWhere('kode', 'C3')->subCriteria, 'Benefit'),
+                'C4' => $this->calculateUtilityValue($car->kapasitas_mesin, $criteria->firstWhere('kode', 'C4')->subCriteria, 'Benefit')
             ];
-            foreach ($criteria as $criterion) {
-                $subCriteria = $criterion->subCriteria;
-                $value = $this->getCarValue($car, $criterion->kode);
-                $utility[$criterion->kode] = $this->calculateUtilityValue($value, $subCriteria, $criterion->jenis);
-            }
             $utilities[$car->id] = $utility;
         }
         return $utilities;
-    }
-
-    private function getCarValue($car, $criteriaCode)
-    {
-        switch ($criteriaCode) {
-            case 'C1':
-                return $car->harga;
-            case 'C2':
-                return $car->jumlah_seat;
-            case 'C3':
-                return $car->warna;
-            case 'C4':
-                return $car->kapasitas_mesin;
-            default:
-                return 0;
-        }
     }
 
     private function calculateUtilityValue($value, $subCriteria, $jenis)
@@ -70,80 +60,31 @@ class EvaluationController extends Controller
         }
     }
 
-    private function calculateRankings($utilities)
+    private function calculateRankings($utilities, $weights)
     {
         $rankings = [];
         foreach ($utilities as $carId => $utility) {
-            $total = array_sum($utility);
-            $rankings[$carId] = $total;
+            $total = ($utility['C1'] * $weights['C1']) +
+                ($utility['C2'] * $weights['C2']) +
+                ($utility['C3'] * $weights['C3']) +
+                ($utility['C4'] * $weights['C4']);
+            $rankings[$carId] = [
+                'total' => $total,
+                'utility' => $utility
+            ];
         }
-        arsort($rankings);
+        uasort($rankings, function ($a, $b) {
+            return $b['total'] <=> $a['total'];
+        });
+
+        $recommendations = ['Sangat Layak', 'Layak', 'Dipertimbangkan', 'Tidak Layak'];
+        $rank = 1;
+        foreach ($rankings as &$ranking) {
+            $ranking['rank'] = $rank++;
+            $ranking['recommendation'] = $recommendations[$rank - 2] ?? 'Tidak Layak';
+        }
+
         return $rankings;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
