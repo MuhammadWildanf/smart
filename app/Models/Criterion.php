@@ -13,6 +13,7 @@ class Criterion extends Model
     protected $fillable = [
         'kode',
         'criteria',
+        'weight',
         'jenis',
     ];
 

@@ -46,6 +46,7 @@ class CriteriaController extends Controller
         $this->validate($request, [
             'kode' => 'required|unique:criteria,kode',
             'criteria' => 'required|unique:criteria,criteria',
+            'weight' => 'required|numeric|min:0|max:1',
             'jenis' => 'required|in:Cost,Benefit',
         ]);
 
@@ -99,6 +100,7 @@ class CriteriaController extends Controller
         $this->validate($request, [
             'kode' => 'required|unique:criteria,kode',
             'criteria' => 'required|unique:criteria,criteria',
+            'weight' => 'required|numeric|min:0|max:1',
             'jenis' => 'required|in:Cost,Benefit',
         ]);
 
@@ -140,6 +142,6 @@ class CriteriaController extends Controller
                 }
                 return $action;
             })
-            ->rawColumns(['kode', 'criteria', 'jenis', 'action'])->make('true');
+            ->rawColumns(['kode', 'criteria', 'weight','jenis', 'action'])->make('true');
     }
 }

@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\capacities;
 use DataTables;
 use Carbon\Carbon;
 use App\Models\Car;
+use App\Models\colors;
+use App\Models\prices;
+use App\Models\seats;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -18,10 +22,15 @@ class CarsController extends Controller
      */
     public function index(Request $request)
     {
+        $prices = prices::all();
+        $colos = colors::all();
+        $seats = seats::all();
+        $capacities = capacities::all();
+
         if ($request->ajax()) {
             return $this->getCars();
         }
-        return view('cars.index');
+        return view('cars.index', compact('prices', 'colos', 'seats', 'capacities'));
     }
 
     /**
@@ -44,10 +53,10 @@ class CarsController extends Controller
     {
         $this->validate($request, [
             'nama' => 'required',
-            'harga' => 'required',
-            'warna' => 'required',
-            'kapasitas_mesin' => 'required',
-            'jumlah_seat' => 'required',
+            'harga_id' => 'required',
+            'warna_id' => 'required',
+            'kapasitas_mesin_id' => 'required',
+            'seat_id' => 'required',
         ]);
 
         $car->create($request->all());
@@ -79,7 +88,12 @@ class CarsController extends Controller
      */
     public function edit(Car $car)
     {
-        return view('cars.edit', ['car' => $car]);
+        $prices = prices::all();
+        $colos = colors::all();
+        $seats = seats::all();
+        $capacities = capacities::all();
+
+        return view('cars.edit', ['car' => $car, 'prices' => $prices, 'colos' => $colos, 'seats' => $seats, 'capacities' => $capacities]);
     }
 
     /**
@@ -93,20 +107,19 @@ class CarsController extends Controller
     {
         $this->validate($request, [
             'nama' => 'required',
-            'harga' => 'required',
-            'warna' => 'required',
-            'kapasitas_mesin' => 'required',
-            'jumlah_seat' => 'required', 
-        ]); 
-        
+            'harga_id' => 'required',
+            'warna_id' => 'required',
+            'kapasitas_mesin_id' => 'required',
+            'seat_id' => 'required',
+        ]);
+
         $car->update($request->all());
 
-        if($car)
-        {
-            toast('Car Updated Successfully.','success');
+        if ($car) {
+            toast('Car Updated Successfully.', 'success');
             return Redirect::to('cars');
         }
-        toast('Error in Car Update','error');
+        toast('Error in Car Update', 'error');
         return back()->withInput();
     }
 
@@ -128,6 +141,18 @@ class CarsController extends Controller
     {
         $data = Car::latest()->get();
         return DataTables::of($data)
+            ->addColumn('harga', function ($row) {
+                return $row->harga->harga;
+            })
+            ->addColumn('warna', function ($row) {
+                return $row->warna->warna;
+            })
+            ->addColumn('kapasitas_mesin', function ($row) {
+                return $row->kapasitasMesin->kapasitas_mesin;
+            })
+            ->addColumn('seat', function ($row) {
+                return $row->seat->jumlah_seat;
+            })
             ->addColumn('action', function ($row) {
                 $action = "";
                 if (Auth::user()->can('cars.edit')) {
@@ -138,6 +163,6 @@ class CarsController extends Controller
                 }
                 return $action;
             })
-            ->rawColumns(['nama', 'harga', 'warna', 'kapasitas_mesin', 'jumlah_seat', 'action'])->make('true');
+            ->rawColumns(['nama', 'harga_id', 'warna_id', 'kapasitas_mesin_id', 'seat_id', 'action'])->make('true');
     }
 }

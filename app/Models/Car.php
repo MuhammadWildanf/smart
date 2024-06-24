@@ -11,9 +11,30 @@ class Car extends Model
 
     protected $fillable = [
         'nama',
-        'harga',
-        'warna',
-        'kapasitas_mesin',
-        'jumlah_seat',
+        'harga_id',
+        'warna_id',
+        'kapasitas_mesin_id',
+        'seat_id',
     ];
+
+
+    public function harga()
+    {
+        return $this->belongsTo(prices::class, 'harga_id');
+    }
+
+    public function warna()
+    {
+        return $this->belongsTo(colors::class, 'warna_id');
+    }
+
+    public function seat()
+    {
+        return $this->belongsTo(seats::class, 'seat_id');
+    }
+
+    public function kapasitasMesin()
+    {
+        return $this->belongsTo(capacities::class, 'kapasitas_mesin_id');
+    }
 }

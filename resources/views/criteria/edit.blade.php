@@ -38,6 +38,14 @@
                                 @endif
                             </div>
                             <div class="form-group">
+                                <label for="weight" class="form-label">Bobot <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="weight" step="0.01" min="0" max="1"
+                                    placeholder="Enter weight" value="{{ $criterion->weight }}">
+                                @if ($errors->has('weight'))
+                                    <span class="text-danger">{{ $errors->first('weight') }}</span>
+                                @endif
+                            </div>
+                            <div class="form-group">
                                 <label for="jenis" class="form-label">Jenis</label>
                                 <select class="form-control" name="jenis">
                                     <option value="">Pilih Jenis</option>

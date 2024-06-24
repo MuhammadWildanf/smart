@@ -29,38 +29,50 @@
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="harga" class="form-label">Harga <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" name="harga" placeholder="Masukan Harga"
-                                    value="{{ old('harga') }}">
-                                @if ($errors->has('harga'))
-                                    <span class="text-danger">{{ $errors->first('harga') }}</span>
+                                <label for="harga_id" class="form-label">Harga <span class="text-danger">*</span></label>
+                                <select class="form-control" name="harga_id">
+                                    @foreach ($prices as $harga)
+                                        <option value="{{ $harga->id }}">{{ $harga->harga }}</option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('harga_id'))
+                                    <span class="text-danger">{{ $errors->first('harga_id') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="jumlah_seat" class="form-label">Jumlah Seat</label>
-                                <input type="number" class="form-control" name="jumlah_seat"
-                                    placeholder="Masukan Jumlah Seat" value="{{ old('jumlah_seat') }}">
-                                @if ($errors->has('jumlah_seat'))
-                                    <span class="text-danger">{{ $errors->first('jumlah_seat') }}</span>
+                                <label for="seat_id" class="form-label">Jumlah Seat</label>
+                                <select class="form-control" name="seat_id">
+                                    @foreach ($seats as $seat)
+                                        <option value="{{ $seat->id }}">{{ $seat->jumlah_seat }}</option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('seat_id'))
+                                    <span class="text-danger">{{ $errors->first('seat_id') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="warna" class="form-label">Warna</label>
-                                <input type="text" class="form-control" name="warna" placeholder="Masukan Warna"
-                                    value="{{ old('warna') }}">
-                                @if ($errors->has('warna'))
-                                    <span class="text-danger">{{ $errors->first('warna') }}</span>
+                                <label for="warna_id" class="form-label">Warna</label>
+                                <select class="form-control" name="warna_id">
+                                    @foreach ($colos as $warna)
+                                        <option value="{{ $warna->id }}">{{ $warna->warna }}</option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('warna_id'))
+                                    <span class="text-danger">{{ $errors->first('warna_id') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="kapasitas_mesin" class="form-label">Kapasitas Mesin</label>
-                                <input type="text" class="form-control" name="kapasitas_mesin"
-                                    placeholder="Masukan Kapasistas Mesin" value="{{ old('kapasitas_mesin') }}">
-                                @if ($errors->has('kapasitas_mesin'))
-                                    <span class="text-danger">{{ $errors->first('kapasitas_mesin') }}</span>
+                                <label for="kapasitas_mesin_id" class="form-label">Kapasitas Mesin</label>
+                                <select class="form-control" name="kapasitas_mesin_id">
+                                    @foreach ($capacities as $kapasitas_mesin)
+                                        <option value="{{ $kapasitas_mesin->id }}">{{ $kapasitas_mesin->kapasitas_mesin }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('kapasitas_mesin_id'))
+                                    <span class="text-danger">{{ $errors->first('kapasitas_mesin_id') }}</span>
                                 @endif
                             </div>
-                            
                         </div>
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">Save</button>
@@ -130,19 +142,19 @@
                     },
                     {
                         data: 'harga',
-                        name: 'harga'
+                        name: 'harga.harga'
                     },
                     {
                         data: 'warna',
-                        name: 'warna'
+                        name: 'warna.warna'
                     },
                     {
                         data: 'kapasitas_mesin',
-                        name: 'kapasitas_mesin',
+                        name: 'kapasitas_mesin.kapasitas_mesin'
                     },
                     {
-                        data: 'jumlah_seat',
-                        name: 'jumlah_seat',
+                        data: 'seat',
+                        name: 'seat.jumlah_seat'
                     },
                     {
                         data: 'action',

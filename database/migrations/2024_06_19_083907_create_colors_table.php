@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('criteria', function (Blueprint $table) {
-            $table->id();
-            $table->string('kode');
-            $table->string('criteria');
-            $table->decimal('weight', 5, 2);
-            $table->enum('jenis', ['Cost', 'Benefit']);
+        Schema::create('colors', function (Blueprint $table) {
+            $table->id(); 
+            $table->string('warna');
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('criteria');
+        Schema::dropIfExists('colors');
     }
 };
