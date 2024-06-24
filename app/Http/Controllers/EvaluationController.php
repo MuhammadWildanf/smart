@@ -8,136 +8,71 @@ use Illuminate\Http\Request;
 
 class EvaluationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
-    {
-        // Ambil semua mobil dari database
-        $cars = Car::all();
+{
+    // Ambil semua mobil dari database
+    $cars = Car::all();
 
-        // Ambil semua kriteria beserta sub kriteria dari database
-        $criteria = Criterion::with('subCriteria')->get();
+    // Ambil semua kriteria dan sub kriteria
+    $criteria = Criterion::with('subCriteria')->get();
 
-        // Ambil bobot dari setiap kriteria
-        $weights = $criteria->pluck('weight', 'kode')->toArray();
-
-        // Hitung utilitas untuk setiap mobil berdasarkan kriteria
-        $utilities = $this->calculateUtilities($cars, $criteria);
-
-        // Hitung perankingan berdasarkan utilitas yang telah dihitung
-        $rankings = $this->calculateRankings($utilities, $weights);
-
-        // Kembalikan view dengan data utilitas dan perankingan
-        return view('evaluation.index', compact('utilities', 'rankings'));
+    // Hitung nilai utiliti untuk setiap mobil
+    $utilitiValues = [];
+    foreach ($cars as $car) {
+        $utilitiValues[$car->id] = [
+            'nama' => $car->nama,
+            'C1' => $this->calculateUtiliti($car->harga_id, 'cost', $criteria->where('kode', 'C1')->first()->subCriteria),
+            'C2' => $this->calculateUtiliti($car->seat_id, 'benefit', $criteria->where('kode', 'C2')->first()->subCriteria),
+            'C3' => $this->calculateUtiliti($car->warna_id, 'benefit', $criteria->where('kode', 'C3')->first()->subCriteria),
+            'C4' => $this->calculateUtiliti($car->kapasitas_mesin_id, 'benefit', $criteria->where('kode', 'C4')->first()->subCriteria),
+        ];
     }
 
-    /**
-     * Menghitung nilai utilitas untuk setiap mobil berdasarkan kriteria.
-     *
-     * @param \Illuminate\Database\Eloquent\Collection $cars
-     * @param \Illuminate\Database\Eloquent\Collection $criteria
-     * @return array
-     */
-    private function calculateUtilities($cars, $criteria)
-    {
-        $utilities = [];
+    // Convert specific attributes to decimal
+    $cars = $this->convertAttributesToDecimal($cars);
 
+    // Buat JSON response
+    $jsonData = [
+        'cars' => $cars,
+        'criteria' => $criteria,
+        'utilitiValues' => $utilitiValues,
+    ];
+
+    // return response()->json($jsonData);
+
+    return view('evaluation.index', compact('cars','utilitiValues', 'criteria'));
+}
+
+    private function convertAttributesToDecimal($cars)
+    {
         foreach ($cars as $car) {
-            $utility = [
-                'nama' => $car->nama,
-                'C1' => $this->calculateUtilityValue($car->harga, $criteria->where('kode', 'C1')->first()),
-                'C2' => $this->calculateUtilityValue($car->jumlah_seat, $criteria->where('kode', 'C2')->first()),
-                'C3' => $this->calculateUtilityValue($car->warna, $criteria->where('kode', 'C3')->first()),
-                'C4' => $this->calculateUtilityValue($car->kapasitas_mesin, $criteria->where('kode', 'C4')->first()),
-            ];
-            $utilities[$car->id] = $utility;
+            $car->harga_id_decimal = number_format($car->harga_id / 100, 2, ',', '.');
+            $car->seat_id_decimal = number_format($car->seat_id / 100, 2, ',', '.');
+            $car->warna_id_decimal = number_format($car->warna_id / 100, 2, ',', '.');
+            $car->kapasitas_mesin_id_decimal = number_format($car->kapasitas_mesin_id / 100, 2, ',', '.');
         }
 
-        return $utilities;
+        return $cars;
     }
 
-    /**
-     * Menghitung nilai utilitas berdasarkan nilai dari data mobil dan kriteria.
-     *
-     * @param mixed $value
-     * @param \App\Models\Criterion $criterion
-     * @return float
-     */
-    private function calculateUtilityValue($value, $criterion)
-    {
+    private function calculateUtiliti($nilaiKriteria, $jenisKriteria, $subCriteria)
+{
+    $nilaiKriteria = (float) $nilaiKriteria;
 
-        $subCriteria = $criterion->subCriteria;
+    if ($jenisKriteria === 'cost') {
+        $subCriteriaValues = $subCriteria->pluck('nilai')->toArray();
+        $nilaiTerburuk = max($subCriteriaValues);
+        $nilaiTerbaik = min($subCriteriaValues);
 
-        // Cari sub kriteria yang intervalnya sesuai dengan nilai $value
-        $sub = $subCriteria->first(function ($sub) use ($value) {
-            // Ubah interval menjadi batas atas dan batas bawah
-            preg_match('/([\d.]+)\s*-\s*([\d.]+)/', $sub->interval, $matches);
-            $lower = (float) str_replace(',', '', $matches[1] ?? 0);
-            $upper = (float) str_replace(',', '', $matches[2] ?? PHP_FLOAT_MAX);
-
-            // Cek apakah nilai $value berada dalam interval yang sesuai
-            return $value >= $lower && $value <= $upper;
-        });
-
-        if (!$sub) {
-            return 0; // Atau nilai default lain jika tidak ada sub kriteria yang cocok
-        }
-
-        $min = $subCriteria->min('nilai');
-        $max = $subCriteria->max('nilai');
-
-        if ($criterion->jenis == 'Cost') {
-            // Implementasi perhitungan utility untuk Cost
-            return ($max - $sub->nilai) / ($max - $min);
-        } else {
-            // Implementasi perhitungan utility untuk Benefit
-            return ($sub->nilai - $min) / ($max - $min);
-        }
+        $utiliti = (($nilaiTerburuk - $nilaiKriteria) / ($nilaiTerburuk - $nilaiTerbaik)) * 100;
+    } elseif ($jenisKriteria === 'benefit') {
+        $subCriteriaValue = $subCriteria->where('id', $nilaiKriteria)->first(); // Mencari sub kriteria berdasarkan id
+        $utiliti = $subCriteriaValue ? $subCriteriaValue->nilai : 0; // Mengambil nilai sub kriteria atau default 0 jika tidak ditemukan
+    } else {
+        $utiliti = 0; // Default jika jenis kriteria tidak valid
     }
 
-    /**
-     * Menghitung perankingan mobil berdasarkan total utilitas dan bobot kriteria.
-     *
-     * @param array $utilities
-     * @param array $weights
-     * @return array
-     */
-    private function calculateRankings($utilities, $weights)
-    {
-        // Inisialisasi array untuk menyimpan perankingan
-        $rankings = [];
-
-        // Iterasi setiap mobil dan hitung total utilitasnya
-        foreach ($utilities as $carId => $utility) {
-            $total = ($utility['C1'] * $weights['C1']) +
-                ($utility['C2'] * $weights['C2']) +
-                ($utility['C3'] * $weights['C3']) +
-                ($utility['C4'] * $weights['C4']);
-
-            // Simpan hasil perhitungan perankingan ke dalam array
-            $rankings[$carId] = [
-                'total' => $total,
-                'utility' => $utility,
-            ];
-        }
-
-        // Urutkan berdasarkan total utilitas dari tertinggi ke terendah
-        uasort($rankings, function ($a, $b) {
-            return $b['total'] <=> $a['total'];
-        });
-
-        // Tambahkan peringkat dan rekomendasi ke setiap mobil
-        $recommendations = ['Sangat Layak', 'Layak', 'Dipertimbangkan', 'Tidak Layak'];
-        $rank = 1;
-        foreach ($rankings as &$ranking) {
-            $ranking['rank'] = $rank;
-            $ranking['recommendation'] = $recommendations[$rank - 1] ?? 'Tidak Layak';
-            $rank++;
-        }
-
-        return $rankings;
-    }
+    return round($utiliti, 2);
+}
 }

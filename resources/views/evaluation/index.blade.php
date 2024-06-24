@@ -7,91 +7,117 @@
 @stop
 
 @section('content')
-    <div class="container">
-        
-        <h2>Nilai Alternatif Mobil</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Alternatif</th>
-                    <th>C1 (Harga)</th>
-                    <th>C2 (Jumlah Seat)</th>
-                    <th>C3 (Warna)</th>
-                    <th>C4 (Kapasitas Mesin)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($utilities as $carId => $utility)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $utility['nama'] }}</td>
-                        <td>{{ $utility['C1'] }}</td>
-                        <td>{{ $utility['C2'] }}</td>
-                        <td>{{ $utility['C3'] }}</td>
-                        <td>{{ $utility['C4'] }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h5>Nilai Kriteria</h5>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nama</th>
+                                <th>C1</th>
+                                <th>C2</th>
+                                <th>C3</th>
+                                <th>C4</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($cars as $car)
+                                <tr>
+                                    <td>{{ $car->id }}</td>
+                                    <td>{{ $car->nama }}</td>
+                                    <td>{{ $car->harga_id }}</td>
+                                    <td>{{ $car->seat_id }}</td>
+                                    <td>{{ $car->warna_id }}</td>
+                                    <td>{{ $car->kapasitas_mesin_id }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <h2>Nilai Utility</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Alternatif</th>
-                    <th>C1 (Harga)</th>
-                    <th>C2 (Jumlah Seat)</th>
-                    <th>C3 (Warna)</th>
-                    <th>C4 (Kapasitas Mesin)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($utilities as $carId => $utility)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $utility['nama'] }}</td>
-                        <td>{{ number_format($utility['C1'], 2) }}</td>
-                        <td>{{ number_format($utility['C2'], 2) }}</td>
-                        <td>{{ number_format($utility['C3'], 2) }}</td>
-                        <td>{{ number_format($utility['C4'], 2) }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h5>Nilai Kriteria (dalam Desimal)</h5>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nama</th>
+                                <th>C1</th>
+                                <th>C2</th>
+                                <th>C3</th>
+                                <th>C4</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($cars as $car)
+                                <tr>
+                                    <td>{{ $car->id }}</td>
+                                    <td>{{ $car->nama }}</td>
+                                    <td>{{ $car->harga_id_decimal }}</td>
+                                    <td>{{ $car->seat_id_decimal }}</td>
+                                    <td>{{ $car->warna_id_decimal }}</td>
+                                    <td>{{ $car->kapasitas_mesin_id_decimal }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <h2>Nilai Keseluruhan</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Alternatif</th>
-                    <th>C1 (Harga)</th>
-                    <th>C2 (Jumlah Seat)</th>
-                    <th>C3 (Warna)</th>
-                    <th>C4 (Kapasitas Mesin)</th>
-                    <th>Total</th>
-                    <th>Rank</th>
-                    <th>Rekomendasi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($rankings as $carId => $ranking)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $ranking['utility']['nama'] }}</td>
-                        <td>{{ number_format($ranking['utility']['C1'] * 0.35, 2) }}</td>
-                        <td>{{ number_format($ranking['utility']['C2'] * 0.3, 2) }}</td>
-                        <td>{{ number_format($ranking['utility']['C3'] * 0.15, 2) }}</td>
-                        <td>{{ number_format($ranking['utility']['C4'] * 0.2, 2) }}</td>
-                        <td>{{ number_format($ranking['total'], 2) }}</td>
-                        <td>{{ $ranking['rank'] }}</td>
-                        <td>{{ $ranking['recommendation'] }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h5>Nilai Utiliti</h5>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Alternatif</th>
+                                <th>C1 ({{ $criteria->where('kode', 'C1')->first()->criteria }})</th>
+                                <th>C2 ({{ $criteria->where('kode', 'C2')->first()->criteria }})</th>
+                                <th>C3 ({{ $criteria->where('kode', 'C3')->first()->criteria }})</th>
+                                <th>C4 ({{ $criteria->where('kode', 'C4')->first()->criteria }})</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($utilitiValues as $carId => $utiliti)
+                                <tr>
+                                    <td>{{ $utiliti['nama'] }}</td>
+                                    <td>{{ number_format($utiliti['C1'], 2, ',', '.') }}</td>
+                                    <td>{{ number_format($utiliti['C2'], 2, ',', '.') }}</td>
+                                    <td>{{ number_format($utiliti['C3'], 2, ',', '.') }}</td>
+                                    <td>{{ number_format($utiliti['C4'], 2, ',', '.') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 @stop
 
