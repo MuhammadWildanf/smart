@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Car;
 use App\Models\Criterion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class EvaluationController extends Controller
 {
-
     public function index()
     {
-        // Ambil semua mobil dari database
         $cars = Car::all();
 
         $criteria = Criterion::with('subCriteria')->get();
@@ -27,17 +26,24 @@ class EvaluationController extends Controller
             ];
         }
 
+        // Calculate total scores   
+        $totalScores = $this->calculateTotalScore($utilitiValues, $criteria);
+
+        // Calculate rank
+        $totalScores = $this->calculateRank($utilitiValues, $totalScores);
+
         $cars = $this->convertAttributesToDecimal($cars);
 
-        $jsonData = [
+        $response = [
             'cars' => $cars,
             'criteria' => $criteria,
             'utilitiValues' => $utilitiValues,
+            'totalScores' => $totalScores
         ];
 
-        // return response()->json($jsonData);
+        // return response()->json($response);
 
-        return view('evaluation.index', compact('cars', 'utilitiValues', 'criteria'));
+        return view('evaluation.index', compact('cars', 'utilitiValues', 'criteria', 'totalScores'));
     }
 
     private function convertAttributesToDecimal($cars)
@@ -52,38 +58,72 @@ class EvaluationController extends Controller
         return $cars;
     }
 
-    private function calculateUtiliti($nilaiKriteria, $jenisKriteria, $subCriteria)
+    private function calculateUtiliti($value, $type, $subCriteria)
     {
-        $nilaiKriteria = (float) $nilaiKriteria;
+        $max = null;
+        $min = null;
 
-        if ($jenisKriteria === 'cost') {
-            // Kriteria Biaya (Cost)
-            $subCriteriaValues = $subCriteria->pluck('nilai')->toArray();
-            $nilaiTerburuk = max($subCriteriaValues);
-            $nilaiTerbaik = min($subCriteriaValues);
-
-            // Hitung nilai utiliti untuk kriteria cost
-            if ($nilaiTerburuk != $nilaiTerbaik) {
-                $utiliti = (($nilaiTerburuk - $nilaiKriteria) / ($nilaiTerburuk - $nilaiTerbaik)) * 100;
-            } else {
-                $utiliti = 0; // Jika nilaiTerburuk sama dengan nilaiTerbaik, maka utiliti dijadikan 0
+        // Loop untuk mencari nilai maksimum dan minimum dari subkriteria
+        foreach ($subCriteria as $subCriterion) {
+            if ($max === null || $subCriterion->nilai > $max) {
+                $max = $subCriterion->nilai;
             }
-        } elseif ($jenisKriteria === 'benefit') {
-            // Kriteria Keuntungan (Benefit)
-            $subCriteriaValues = $subCriteria->pluck('nilai')->toArray();
-            $nilaiTerbaik = max($subCriteriaValues);
-            $nilaiTerendah = min($subCriteriaValues);
-
-            // Hitung nilai utiliti untuk kriteria benefit
-            if ($nilaiTerbaik != $nilaiTerendah) {
-                $utiliti = (($nilaiKriteria - $nilaiTerendah) / ($nilaiTerbaik - $nilaiTerendah)) * 100;
-            } else {
-                $utiliti = 0; // Jika nilaiTerbaik sama dengan nilaiTerendah, maka utiliti dijadikan 0
+            if ($min === null || $subCriterion->nilai < $min) {
+                $min = $subCriterion->nilai;
             }
-        } else {
-            $utiliti = 0; // Jika jenis kriteria tidak dikenali, maka utiliti dijadikan 0
         }
 
-        return round($utiliti, 2);
+        // Pastikan max dan min tidak null untuk menghindari pembagian dengan nol
+        if ($max === null || $min === null || $max == $min) {
+            return 0;
+        }
+
+        // Konversi $value menjadi float (pastikan tipe datanya sesuai)
+        $value = floatval(str_replace(',', '.', $value));
+
+        // Perhitungan utiliti berdasarkan tipe kriteria
+        if (strtolower($type) == 'cost') {
+            return ($max - $value) / ($max - $min) * 100;
+        } elseif (strtolower($type) == 'benefit') {
+            return ($value - $min) / ($max - $min) * 100;
+        }
+
+        return 0;
+    }
+
+
+    private function calculateTotalScore($utilitiValues, $criteria)
+    {
+        $totalScores = [];
+        foreach ($utilitiValues as $carId => $values) {
+            $total = 0;
+            foreach ($criteria as $criterion) {
+                $kode = $criterion->kode;
+                $weight = $criterion->weight;
+                $total += $values[$kode] * $weight;
+            }
+            $totalScores[$carId] = [
+                'nama' => $values['nama'],
+                'C1' => $values['C1'],
+                'C2' => $values['C2'],
+                'C3' => $values['C3'],
+                'C4' => $values['C4'],
+                'total' => $total,
+            ];
+        }
+        return $totalScores;
+    }
+
+    private function calculateRank($utilitiValues, $totalScores)
+    {
+        uasort($totalScores, function ($a, $b) {
+            return $b['total'] <=> $a['total'];
+        });
+
+        $rank = 1;
+        foreach ($totalScores as $carId => &$score) {
+            $score['peringkat'] = $rank++;
+        }
+        return $totalScores;
     }
 }
