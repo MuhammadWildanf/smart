@@ -68,6 +68,7 @@ class EvaluationController extends Controller
             if ($max === null || $subCriterion->nilai > $max) {
                 $max = $subCriterion->nilai;
             }
+            
             if ($min === null || $subCriterion->nilai < $min) {
                 $min = $subCriterion->nilai;
             }

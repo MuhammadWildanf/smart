@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use Database\Factories\CarFactory;
 use Illuminate\Database\Seeder;
 use Database\Seeders\CreateSuperUserSeeder;
 class DatabaseSeeder extends Seeder
@@ -22,5 +24,7 @@ class DatabaseSeeder extends Seeder
        CarSeeder::class,
        CriteriaTableSeeder::class,
        SubCriteriaTableSeeder::class,]);
+
+       CarFactory::times(100)->create();
     }
 }

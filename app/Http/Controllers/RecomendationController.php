@@ -181,9 +181,16 @@ class RecomendationController extends Controller
                     'jenis' => $jenis,
                     'nilai' => $weightedScore,
                 ];
+            }else{
+                $smartScores[$criterion->kode] = [
+                    'weight' => $weight,
+                    'jenis' => $jenis,
+                    'nilai' => 0,
+                ];
             }
         }
 
+        // dd($smartScores);
         return $smartScores;
     }
 
