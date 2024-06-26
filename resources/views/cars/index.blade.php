@@ -11,7 +11,7 @@
         <div class="row">
             <div id="errorBox"></div>
             <div class="col-3">
-                <form method="POST" action="{{ route('cars.store') }}">
+                <form method="POST" action="{{ route('cars.store') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="card">
                         <div class="card-header">
@@ -26,6 +26,13 @@
                                     value="{{ old('nama') }}">
                                 @if ($errors->has('nama'))
                                     <span class="text-danger">{{ $errors->first('nama') }}</span>
+                                @endif
+                            </div>
+                            <div class="form-group">
+                                <label for="image_url" class="form-label">Image</label>
+                                <input type="file" class="form-control" name="image_url">
+                                @if ($errors->has('image_url'))
+                                    <span class="text-danger">{{ $errors->first('image_url') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
@@ -94,6 +101,7 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>Gambar</th>
                                         <th>Nama</th>
                                         <th>Harga</th>
                                         <th>Warna</th>
@@ -136,6 +144,7 @@
                         data: 'id',
                         name: 'id'
                     },
+                    { data: 'image_url', name: 'image_url', bSortable: false },
                     {
                         data: 'nama',
                         name: 'nama'

@@ -96,6 +96,7 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
+                                <th>No</th>
                                 <th>Alternatif</th>
                                 <th>C1 ({{ $criteria->where('kode', 'C1')->first()->criteria }})</th>
                                 <th>C2 ({{ $criteria->where('kode', 'C2')->first()->criteria }})</th>
@@ -106,6 +107,7 @@
                         <tbody>
                             @foreach ($utilitiValues as $carId => $utiliti)
                                 <tr>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td>{{ $utiliti['nama'] }}</td>
                                     <td>{{ number_format($utiliti['C1'], 2, ',', '.') }}</td>
                                     <td>{{ number_format($utiliti['C2'], 2, ',', '.') }}</td>
@@ -132,6 +134,7 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
+                                <th>No</th>
                                 <th>Alternatif</th>
                                 <th>C1</th>
                                 <th>C2</th>
@@ -143,6 +146,7 @@
                         <tbody>
                             @foreach ($totalScores as $score)
                                 <tr>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td>{{ $score['nama'] }}</td>
                                     <td>{{ $score['C1'] }}</td>
                                     <td>{{ $score['C2'] }}</td>

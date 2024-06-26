@@ -57,9 +57,18 @@ class CarsController extends Controller
             'warna_id' => 'required',
             'kapasitas_mesin_id' => 'required',
             'seat_id' => 'required',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $car->create($request->all());
+        $input = $request->all();
+
+        $car = Car::create($input);
+
+        if ($request->hasFile('image_url')) {
+            $imageName = $car->id . '-' . str_replace(' ', '_', $request->nama) . '.' . $request->image_url->extension();
+            $request->image_url->move(public_path('images'), $imageName);
+            $car->update(['image_url' => $imageName]);
+        }
 
         if ($car) {
             toast('New Car Created Successfully.', 'success');
@@ -111,9 +120,24 @@ class CarsController extends Controller
             'warna_id' => 'required',
             'kapasitas_mesin_id' => 'required',
             'seat_id' => 'required',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $car->update($request->all());
+        $input = $request->all();
+
+        if ($request->hasFile('image_url')) {
+            // Hapus gambar lama
+            if ($car->image_url && file_exists(public_path('images/' . $car->image_url))) {
+                unlink(public_path('images/' . $car->image_url));
+            }
+
+            // Upload gambar baru dengan nama baru
+            $imageName = $car->id . '-' . str_replace(' ', '_', $request->nama) . '.' . $request->image_url->extension();
+            $request->image_url->move(public_path('images'), $imageName);
+            $input['image_url'] = $imageName;
+        }
+
+        $car->update($input);
 
         if ($car) {
             toast('Car Updated Successfully.', 'success');
@@ -131,6 +155,11 @@ class CarsController extends Controller
      */
     public function destroy(Request $request, Car $car)
     {
+
+        if ($car->image_url && file_exists(public_path('images/' . $car->image_url))) {
+            unlink(public_path('images/' . $car->image_url));
+        }
+
         if ($request->ajax() && $car->delete()) {
             return response(["message" => "Car Deleted Successfully"], 200);
         }
@@ -141,6 +170,9 @@ class CarsController extends Controller
     {
         $data = Car::latest()->get();
         return DataTables::of($data)
+            ->addColumn('image_url', function ($row) {
+                return '<img src="' . asset('images/' . $row->image_url) . '" alt="Image" width="50" height="50">';
+            })
             ->addColumn('harga', function ($row) {
                 return $row->harga->harga;
             })
@@ -163,6 +195,6 @@ class CarsController extends Controller
                 }
                 return $action;
             })
-            ->rawColumns(['nama', 'harga_id', 'warna_id', 'kapasitas_mesin_id', 'seat_id', 'action'])->make('true');
+            ->rawColumns(['image_url', 'nama', 'harga_id', 'warna_id', 'kapasitas_mesin_id', 'seat_id', 'action'])->make('true');
     }
 }

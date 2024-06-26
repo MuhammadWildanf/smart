@@ -311,37 +311,48 @@ return [
         ],
         [
             'text' => 'Daftar Mobil',
-            'url' => 'cars',
+            'route' => 'cars.index',
             'icon' => 'fas fa-fw fa-book'
         ],
         [
             'text' => 'Data Kriteria',
-            'url' => 'criteria',
+            'route' => 'criteria.index',
             'icon' => 'fas fa-fw fa-book'
         ],
         [
             'text' => 'Data Sub Kriteria',
-            'url' => 'subcriteria',
+            'route' => 'subcriteria.index',
             'icon' => 'fas fa-fw fa-book'
         ],
         [
             'text' => 'Penilaian Mobil',
-            'url' => 'evaluation',
+            'route' => 'evaluation.index',
             'icon' => 'fas fa-fw fa-file'
         ],
         [
+            'text' => 'Daftar Mobil',
+            'route' => 'list-cars.index',
+            'icon' => 'fas fa-fw fa-book'
+        ],
+        [
             'text' => 'Rekomendasi Mobil',
-            'url' => 'recomendation',
+            'route' => 'recomendation.index',
+            'icon' => 'fas fa-fw fa-clone'
+        ],
+        [
+            'text' => 'Hasil Akhir',
+            'route' => 'hasil-akhir.index',
             'icon' => 'fas fa-fw fa-clone'
         ],
         [
             'text' => 'History User',
-            'url' => 'history',
+            'route' => 'history.index',
             'icon' => 'fas fa-fw fa-clock'
         ],
         [
             'text'        => 'Users',
             'icon'        => 'fas fa-fw fa-users',
+            'route'         => 'users.index',
             'submenu'      => [
                 [
                     'text' => 'All',

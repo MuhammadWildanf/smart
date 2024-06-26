@@ -15,6 +15,7 @@ class Car extends Model
         'warna_id',
         'kapasitas_mesin_id',
         'seat_id',
+        'image_url',
     ];
 
 

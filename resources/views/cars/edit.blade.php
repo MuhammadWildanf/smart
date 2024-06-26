@@ -11,7 +11,7 @@
         <div class="row">
             <div id="errorBox"></div>
             <div class="col-3">
-                <form method="POST" action="{{ route('cars.update', $car->id) }}">
+                <form method="POST" action="{{ route('cars.update', $car->id) }}" enctype="multipart/form-data">
                     @method('patch')
                     @csrf
                     <div class="card">
@@ -27,6 +27,13 @@
                                     value="{{ $car->nama }}">
                                 @if ($errors->has('nama'))
                                     <span class="text-danger">{{ $errors->first('nama') }}</span>
+                                @endif
+                            </div>
+                            <div class="form-group">
+                                <label for="image_url" class="form-label">Image</label>
+                                <input type="file" class="form-control" name="image_url">
+                                @if ($errors->has('image_url'))
+                                    <span class="text-danger">{{ $errors->first('image_url') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
