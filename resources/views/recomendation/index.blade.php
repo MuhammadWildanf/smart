@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Recomendation')
+@section('title', 'Rekomendasi')
 
 @section('content_header')
-    <h1>Recomendation</h1>
+    <h1>Rekomendasi</h1>
 @stop
 
 @section('content')
@@ -16,7 +16,8 @@
                             @csrf
                             <div class="form-group">
                                 <label for="harga">Harga:</label>
-                                <select class="form-control" id="harga" name="harga" required>
+                                <select class="form-control" id="harga" name="harga">
+                                    <option value="">Pilih Harga</option> {{-- Opsi default --}}
                                     @foreach ($prices as $price)
                                         <option value="{{ $price->id }}">{{ $price->harga }}</option>
                                     @endforeach
@@ -24,7 +25,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="warna">Warna:</label>
-                                <select class="form-control" id="warna" name="warna" required>
+                                <select class="form-control" id="warna" name="warna">
+                                    <option value="">Pilih Warna</option> {{-- Opsi default --}}
                                     @foreach ($colors as $color)
                                         <option value="{{ $color->id }}">{{ $color->warna }}</option>
                                     @endforeach
@@ -32,7 +34,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="kapasitas_mesin">Kapasitas Mesin:</label>
-                                <select class="form-control" id="kapasitas_mesin" name="kapasitas_mesin" required>
+                                <select class="form-control" id="kapasitas_mesin" name="kapasitas_mesin">
+                                    <option value="">Pilih Kapasitas Mesin</option> {{-- Opsi default --}}
                                     @foreach ($capacities as $capacity)
                                         <option value="{{ $capacity->id }}">{{ $capacity->kapasitas_mesin }}</option>
                                     @endforeach
@@ -40,7 +43,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="jumlah_seat">Jumlah Seat:</label>
-                                <select class="form-control" id="jumlah_seat" name="jumlah_seat" required>
+                                <select class="form-control" id="jumlah_seat" name="jumlah_seat">
+                                    <option value="">Pilih Jumlah Seat</option> {{-- Opsi default --}}
                                     @foreach ($seats as $seat)
                                         <option value="{{ $seat->id }}">{{ $seat->jumlah_seat }}</option>
                                     @endforeach

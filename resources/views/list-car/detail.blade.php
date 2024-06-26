@@ -3,7 +3,7 @@
 @section('title', 'Recomendation')
 
 @section('content_header')
-    <h1>Detail Mobil: {{ $car->nama }}</h1>
+    <h1>Detail Mobil</h1>
 @stop
 
 @section('content')
@@ -12,7 +12,9 @@
             <div class="col-md-8 mx-auto">
                 <div class="card">
                     <div class="card-header">
-                        <h2>{{ $car->name }}</h2>
+                        <div class="card-title">
+                            <h2>{{ $car->nama }}</h2>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="row">
