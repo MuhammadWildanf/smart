@@ -14,200 +14,122 @@ use Illuminate\Http\Request;
 
 class RecomendationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(Request $request)
     {
+        $criteria = Criterion::with('subCriteria')->get();
+
+        $selectedSubCriteria = [
+            'C1' => $request->input('harga_sub_criteria'),
+            'C2' => $request->input('seat_sub_criteria'),
+            'C3' => $request->input('warna_sub_criteria'),
+            'C4' => $request->input('kapasitas_sub_criteria'),
+        ];
+
+        $cars = Car::all();
         $prices = prices::all();
+        $seats = seats::all();
         $colors = colors::all();
         $capacities = capacities::all();
-        $seats = seats::all();
 
-        return view('recomendation.index', compact('prices', 'colors', 'capacities', 'seats'));
+        $utilitiValues = [];
+        foreach ($cars as $car) {
+            $utilitiValues[$car->id] = [
+                'nama' => $car->nama,
+                'C1' => $this->calculateUtiliti($car->harga_id, 'cost', $criteria->where('kode', 'C1')->first()->subCriteria, $selectedSubCriteria['C1']),
+                'C2' => $this->calculateUtiliti($car->seat_id, 'benefit', $criteria->where('kode', 'C2')->first()->subCriteria, $selectedSubCriteria['C2']),
+                'C3' => $this->calculateUtiliti($car->warna_id, 'benefit', $criteria->where('kode', 'C3')->first()->subCriteria, $selectedSubCriteria['C3']),
+                'C4' => $this->calculateUtiliti($car->kapasitas_mesin_id, 'benefit', $criteria->where('kode', 'C4')->first()->subCriteria, $selectedSubCriteria['C4']),
+            ];
+        }
+
+        $totalScores = $this->calculateTotalScore($utilitiValues, $criteria, $selectedSubCriteria);
+        $totalScores = $this->calculateRank($utilitiValues, $totalScores);
+
+        $cars = $this->convertAttributesToDecimal($cars);
+
+        return view('recomendation.index', compact('cars', 'utilitiValues', 'criteria', 'totalScores', 'prices', 'seats', 'colors', 'capacities'));
     }
 
-    public function calculate(Request $request)
+    private function calculateUtiliti($value, $type, $subCriteria, $selectedSubCriteria)
     {
-        $hargaId = $request->input('harga');
-        $warnaId = $request->input('warna');
-        $kapasitasMesinId = $request->input('kapasitas_mesin');
-        $jumlahSeatId = $request->input('jumlah_seat');
+        if (!$selectedSubCriteria) {
+            return 0;
+        }
 
-        Log::info('Form data:', [
-            'hargaId' => $hargaId,
-            'warnaId' => $warnaId,
-            'kapasitasMesinId' => $kapasitasMesinId,
-            'jumlahSeatId' => $jumlahSeatId,
-        ]);
+        $max = null;
+        $min = null;
 
-        // Fetch criteria and sub-criteria data
-        $criteria = Criterion::all();
-        $subCriteria = SubCriterion::all()->groupBy('criteria_id');
-
-        // Check if no valid sub-criteria ID found
-        foreach ($criteria as $criterion) {
-            $criterionId = $criterion->id;
-            $subCriterionId = $request->input('sub_criteria_' . $criterionId);
-
-            // Skip if no valid sub-criterion ID found
-            if (!$subCriterionId || !$subCriteria->has($criterionId)) {
-                continue;
+        foreach ($subCriteria as $subCriterion) {
+            if ($max === null || $subCriterion->nilai > $max) {
+                $max = $subCriterion->nilai;
             }
 
-            // Access sub-criterion value safely
-            $subCriteriaEntry = $subCriteria[$criterionId]->where('id', $subCriterionId)->first();
-
-            if ($subCriteriaEntry) {
-                $subCriterionValue = $subCriteriaEntry->nilai;
-            } else {
-                // Handle the case where no matching sub-criterion ID is found
-                // For example, set a default value or throw an error
-                $subCriterionValue = 0; // Default value or appropriate handling
+            if ($min === null || $subCriterion->nilai < $min) {
+                $min = $subCriterion->nilai;
             }
-
-            // Perform calculations or further processing with $subCriterionValue
-            // Here you can integrate your SMART method calculations
-
-            Log::info("Sub-criterion value for Criterion {$criterion->kode}:", [
-                'subCriterionId' => $subCriterionId,
-                'nilai' => $subCriterionValue,
-            ]);
         }
 
-        // Example code to retrieve cars based on selected criteria
-        $query = Car::query();
-
-        if ($hargaId) {
-            $query->where('harga_id', $hargaId);
+        if ($max === null || $min === null || $max == $min) {
+            return 0;
         }
 
-        if ($warnaId) {
-            $query->where('warna_id', $warnaId);
+        $value = floatval(str_replace(',', '.', $value));
+
+        if (strtolower($type) == 'cost') {
+            return ($max - $value) / ($max - $min) * 100;
+        } elseif (strtolower($type) == 'benefit') {
+            return ($value - $min) / ($max - $min) * 100;
         }
 
-        if ($kapasitasMesinId) {
-            $query->where('kapasitas_mesin_id', $kapasitasMesinId);
-        }
-
-        if ($jumlahSeatId) {
-            $query->where('seat_id', $jumlahSeatId);
-        }
-
-        $cars = $query->get();
-
-        Log::info('Cars found:', $cars->toArray());
-
-        if ($cars->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No cars found matching the selected criteria.',
-            ]);
-        }
-
-        // Calculate SMART scores for selected criteria
-        $smartScores = $this->calculateSmartScores($hargaId, $warnaId, $kapasitasMesinId, $jumlahSeatId);
-
-        // Calculate overall SMART score
-        $overallSmartScore = $this->calculateOverallSmartScore($smartScores);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully retrieved cars based on selected criteria.',
-            'cars' => $cars,
-            'smartScores' => $smartScores,
-            'overallSmartScore' => $overallSmartScore,
-        ]);
+        return 0;
     }
 
-    /**
-     * Calculate SMART scores for selected criteria.
-     *
-     * @param int $hargaId
-     * @param int $warnaId
-     * @param int $kapasitasMesinId
-     * @param int $jumlahSeatId
-     * @return array
-     */
-    private function calculateSmartScores($hargaId, $warnaId, $kapasitasMesinId, $jumlahSeatId)
+    private function calculateTotalScore($utilitiValues, $criteria, $selectedSubCriteria)
     {
-        // Fetch criteria and their sub-criteria data
-        $criteria = Criterion::all();
-        $subCriteria = SubCriterion::all()->groupBy('criteria_id');
-
-        // Initialize array to store SMART scores
-        $smartScores = [];
-
-        // Iterate through criteria to calculate SMART scores
-        foreach ($criteria as $criterion) {
-            $criterionId = $criterion->id;
-            $weight = $criterion->weight;
-            $jenis = $criterion->jenis;
-
-            // Determine which sub-criterion ID corresponds to current criterion
-            switch ($criterionId) {
-                case 1: // Harga Mobil
-                    $subCriterionId = $hargaId;
-                    break;
-                case 2: // Jumlah Seat
-                    $subCriterionId = $jumlahSeatId;
-                    break;
-                case 3: // Warna
-                    $subCriterionId = $warnaId;
-                    break;
-                case 4: // Kapasitas Mesin
-                    $subCriterionId = $kapasitasMesinId;
-                    break;
-                default:
-                    continue 2; // Skip if no valid sub-criterion ID found
+        $totalScores = [];
+        foreach ($utilitiValues as $carId => $values) {
+            $total = 0;
+            foreach ($criteria as $criterion) {
+                $kode = $criterion->kode;
+                $weight = $criterion->weight;
+                if ($selectedSubCriteria[$kode]) {
+                    $total += $values[$kode] * $weight;
+                }
             }
-
-            // Retrieve sub-criterion value
-            $subCriterionValue = $subCriteria[$criterionId]->where('id', $subCriterionId)->first();
-
-            // Check if sub-criterion value exists
-            if ($subCriterionValue) {
-                // Normalize sub-criterion value (if needed)
-                $normalizedValue = $subCriterionValue->nilai; // Assuming no normalization required
-
-                // Calculate weighted score
-                $weightedScore = $normalizedValue * $weight;
-
-                // Store SMART score for current criterion
-                $smartScores[$criterion->kode] = [
-                    'weight' => $weight,
-                    'jenis' => $jenis,
-                    'nilai' => $weightedScore,
-                ];
-            }else{
-                $smartScores[$criterion->kode] = [
-                    'weight' => $weight,
-                    'jenis' => $jenis,
-                    'nilai' => 0,
-                ];
-            }
+            $totalScores[$carId] = [
+                'nama' => $values['nama'],
+                'C1' => $values['C1'],
+                'C2' => $values['C2'],
+                'C3' => $values['C3'],
+                'C4' => $values['C4'],
+                'total' => $total,
+            ];
         }
-
-        // dd($smartScores);
-        return $smartScores;
+        return $totalScores;
     }
 
-    /**
-     * Calculate overall SMART score based on calculated SMART scores.
-     *
-     * @param array $smartScores
-     * @return float
-     */
-    private function calculateOverallSmartScore($smartScores)
+    private function calculateRank($utilitiValues, $totalScores)
     {
-        $overallSmartScore = 0;
+        uasort($totalScores, function ($a, $b) {
+            return $b['total'] <=> $a['total'];
+        });
 
-        foreach ($smartScores as $score) {
-            $overallSmartScore += $score['nilai'];
+        $rank = 1;
+        foreach ($totalScores as $carId => &$score) {
+            $score['peringkat'] = $rank++;
+        }
+        return $totalScores;
+    }
+
+    private function convertAttributesToDecimal($cars)
+    {
+        foreach ($cars as $car) {
+            $car->harga_id_decimal = number_format($car->harga_id / 100, 2, ',', '.');
+            $car->seat_id_decimal = number_format($car->seat_id / 100, 2, ',', '.');
+            $car->warna_id_decimal = number_format($car->warna_id / 100, 2, ',', '.');
+            $car->kapasitas_mesin_id_decimal = number_format($car->kapasitas_mesin_id / 100, 2, ',', '.');
         }
 
-        return $overallSmartScore;
+        return $cars;
     }
 }

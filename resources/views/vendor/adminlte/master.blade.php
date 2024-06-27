@@ -26,6 +26,10 @@
     @if(!config('adminlte.enabled_laravel_mix'))
         <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
         <link rel="stylesheet" href="{{ asset('vendor/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
+
+        {{-- Configured Stylesheets --}}
+        @include('adminlte::plugins', ['type' => 'css'])
+
         <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
 
         @if(config('adminlte.google_fonts.allowed', true))
@@ -35,12 +39,9 @@
         <link rel="stylesheet" href="{{ mix(config('adminlte.laravel_mix_css_path', 'css/app.css')) }}">
     @endif
 
-    {{-- Extra Configured Plugins Stylesheets --}}
-    @include('adminlte::plugins', ['type' => 'css'])
-
     {{-- Livewire Styles --}}
     @if(config('adminlte.livewire'))
-        @if(intval(app()->version()) >= 7)
+        @if(app()->version() >= 7)
             @livewireStyles
         @else
             <livewire:styles />
@@ -85,17 +86,18 @@
         <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
         <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('vendor/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
+
+        {{-- Configured Scripts --}}
+        @include('adminlte::plugins', ['type' => 'js'])
+
         <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
     @else
         <script src="{{ mix(config('adminlte.laravel_mix_js_path', 'js/app.js')) }}"></script>
     @endif
 
-    {{-- Extra Configured Plugins Scripts --}}
-    @include('adminlte::plugins', ['type' => 'js'])
-
     {{-- Livewire Script --}}
     @if(config('adminlte.livewire'))
-        @if(intval(app()->version()) >= 7)
+        @if(app()->version() >= 7)
             @livewireScripts
         @else
             <livewire:scripts />

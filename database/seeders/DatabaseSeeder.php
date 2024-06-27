@@ -25,6 +25,6 @@ class DatabaseSeeder extends Seeder
        CriteriaTableSeeder::class,
        SubCriteriaTableSeeder::class,]);
 
-       CarFactory::times(100)->create();
+    //    CarFactory::times(100)->create();
     }
 }
