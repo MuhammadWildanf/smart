@@ -1,12 +1,11 @@
 <?php
 
 namespace Database\Seeders;
-
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Database\Factories\CarFactory;
 use Illuminate\Database\Seeder;
 use Database\Seeders\CreateSuperUserSeeder;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -16,10 +15,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-       $this->call([CreateSuperUserSeeder::class,
-       CarSeeder::class,
-       CriteriaTableSeeder::class,
-       SubCriteriaTableSeeder::class,]);
-
+        $this->call(
+            [
+                UserSeeder::class,
+                CarSeeder::class,
+                CriteriaTableSeeder::class,
+                SubCriteriaTableSeeder::class,
+            ]
+        );
     }
 }
