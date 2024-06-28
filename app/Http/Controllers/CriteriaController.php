@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Models\Criteria;
 use DataTables;
 use Carbon\Carbon;
 use App\Models\Criterion;
@@ -41,13 +41,15 @@ class CriteriaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Criterion $criterion)
+    public function store(Request $request, Criteria $criterion)
     {
         $this->validate($request, [
-            'kode' => 'required|unique:criteria,kode',
-            'criteria' => 'required|unique:criteria,criteria',
-            'weight' => 'required|numeric|min:0|max:1',
-            'jenis' => 'required|in:Cost,Benefit',
+            'code' => 'required',
+            'name' => 'required',
+            'slug' => 'required',
+            'bobot' => 'required',
+            'normalisasi' => 'required',
+            'type' => 'required|in:benefit,cost',
         ]);
 
         $criterion->create($request->all());
@@ -77,13 +79,13 @@ class CriteriaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Criterion $criterion)
+    public function edit(Criteria $criterion)
     {
-        $jenisOptions = ['Cost', 'Benefit'];
-        
+        $typeOptions = ['benefit', 'cost']; // Definisikan opsi untuk tipe
+
         return view('criteria.edit', [
             'criterion' => $criterion,
-            'jenisOptions' => $jenisOptions,
+            'typeOptions' => $typeOptions, // Kirimkan opsi tipe ke view
         ]);
     }
 
@@ -95,13 +97,15 @@ class CriteriaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Criterion $criterion)
+    public function update(Request $request, Criteria $criterion)
     {
         $this->validate($request, [
-            'kode' => 'required|unique:criteria,kode',
-            'criteria' => 'required|unique:criteria,criteria',
-            'weight' => 'required|numeric|min:0|max:1',
-            'jenis' => 'required|in:Cost,Benefit',
+            'code' => 'required',
+            'name' => 'required',
+            'slug' => 'required',
+            'bobot' => 'required',
+            'normalisasi' => 'required',
+            'type' => 'required|in:benefit,cost',
         ]);
 
         $criterion->update($request->all());
@@ -120,7 +124,7 @@ class CriteriaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, Criterion $criterion)
+    public function destroy(Request $request, Criteria $criterion)
     {
         if ($request->ajax() && $criterion->delete()) {
             return response(["message" => "Criteria Deleted Successfully"], 200);
@@ -130,7 +134,7 @@ class CriteriaController extends Controller
 
     private function getCriteria()
     {
-        $data = Criterion::latest()->get();
+        $data = Criteria::latest()->get();
         return DataTables::of($data)
             ->addColumn('action', function ($row) {
                 $action = "";
@@ -142,6 +146,6 @@ class CriteriaController extends Controller
                 }
                 return $action;
             })
-            ->rawColumns(['kode', 'criteria', 'weight','jenis', 'action'])->make('true');
+            ->rawColumns(['id','code', 'name','slug', 'bobot','normalisasi','type', 'action'])->make('true');
     }
 }

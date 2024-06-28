@@ -1,225 +1,144 @@
 @extends('adminlte::page')
 
-@section('title', 'Evaluation')
+@section('title', 'Penilaian Mobil')
 
 @section('content_header')
-    <h1>Evaluation</h1>
+    <h1>Penilaian Mobil</h1>
 @stop
 
 @section('content')
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h5>Nilai Kriteria untuk Setiap Mobil</h5>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped dataTable dtr-inline">
+                            <thead>
+                                <tr>
+                                    <th>Kode Mobil</th>
+                                    <th>Nama</th>
+                                    @foreach ($criterias as $criteria)
+                                        <th>{{ $criteria->code }}</th>
+                                    @endforeach
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($cars as $car)
+                                    <tr>
+                                        <td>{{ $car->code }}</td>
+                                        <td>{{ $car->name }}</td>
+                                        @foreach ($criterias as $criteria)
+                                            @php
+                                                $value = $car->{$criteria->slug};
+                                                $interval_value = getIntervalValue($criteria, $value);
+                                            @endphp
+                                            <td>{{ $value }} ({{ $interval_value }})</td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        <h5>Nilai Kriteria</h5>
+                        <h5>Nilai Alternatif (Utility)</h5>
                     </div>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nama</th>
-                                <th>C1</th>
-                                <th>C2</th>
-                                <th>C3</th>
-                                <th>C4</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($cars as $car)
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped dataTable dtr-inline">
+                            <thead>
                                 <tr>
-                                    <td>{{ $car->id }}</td>
-                                    <td>{{ $car->nama }}</td>
-                                    <td>{{ $car->harga_id }}</td>
-                                    <td>{{ $car->seat_id }}</td>
-                                    <td>{{ $car->warna_id }}</td>
-                                    <td>{{ $car->kapasitas_mesin_id }}</td>
+                                    <th>Kode Mobil</th>
+                                    @foreach ($criterias as $criteria)
+                                        <th>{{ $criteria->code }}</th>
+                                    @endforeach
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <h5>Nilai Kriteria (dalam Desimal)</h5>
+                            </thead>
+                            <tbody>
+                                @foreach ($cars as $car)
+                                    <tr>
+                                        <td>{{ $car->code }}</td>
+                                        @foreach ($criterias as $criteria)
+                                            <td>{{ number_format($alternatives[$car->code][$criteria->slug], 4) }}</td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="card-body">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nama</th>
-                                <th>C1</th>
-                                <th>C2</th>
-                                <th>C3</th>
-                                <th>C4</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($cars as $car)
-                                <tr>
-                                    <td>{{ $car->id }}</td>
-                                    <td>{{ $car->nama }}</td>
-                                    <td>{{ $car->harga_id_decimal }}</td>
-                                    <td>{{ $car->seat_id_decimal }}</td>
-                                    <td>{{ $car->warna_id_decimal }}</td>
-                                    <td>{{ $car->kapasitas_mesin_id_decimal }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
             </div>
         </div>
+
+
     </div>
 
-
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <h5>Nilai Utiliti</h5>
+     <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h5>Ranking Mobil</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped dataTable dtr-inline">
+                                <thead>
+                                    <tr>
+                                        <th>Ranking</th>
+                                        <th>Kode</th>
+                                        <th>Nama</th>
+                                        <th>Harga</th>
+                                        <th>Jumlah Seat</th>
+                                        <th>Warna</th>
+                                        <th>Kapasitas Mesin</th>
+                                        <th>Total Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($cars as $index => $car)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $car->code }}</td>
+                                            <td>{{ $car->name }}</td>
+                                            <td>{{ $car->price }}</td>
+                                            <td>{{ $car->available_seat }}</td>
+                                            <td>{{ $car->color }}</td>
+                                            <td>{{ $car->capacity_machine }}</td>
+                                            <td>{{ number_format($car->total_score, 4) }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Alternatif</th>
-                                <th>C1 ({{ $criteria->where('kode', 'C1')->first()->criteria }})</th>
-                                <th>C2 ({{ $criteria->where('kode', 'C2')->first()->criteria }})</th>
-                                <th>C3 ({{ $criteria->where('kode', 'C3')->first()->criteria }})</th>
-                                <th>C4 ({{ $criteria->where('kode', 'C4')->first()->criteria }})</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($utilitiValues as $carId => $utiliti)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $utiliti['nama'] }}</td>
-                                    <td>{{ number_format($utiliti['C1'], 2, ',', '.') }}</td>
-                                    <td>{{ number_format($utiliti['C2'], 2, ',', '.') }}</td>
-                                    <td>{{ number_format($utiliti['C3'], 2, ',', '.') }}</td>
-                                    <td>{{ number_format($utiliti['C4'], 2, ',', '.') }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <h5>Nilai Keseluruhan</h5>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Alternatif</th>
-                                <th>C1</th>
-                                <th>C2</th>
-                                <th>C3</th>
-                                <th>C4</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($totalScores as $score)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $score['nama'] }}</td>
-                                    <td>{{ $score['C1'] }}</td>
-                                    <td>{{ $score['C2'] }}</td>
-                                    <td>{{ $score['C3'] }}</td>
-                                    <td>{{ $score['C4'] }}</td>
-                                    <td>{{ $score['total'] }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
-    </div>
-
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <h5>Hasil Evaluasi</h5>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Alternatif</th>
-                                <th>Total</th>
-                                <th>Peringkat</th>
-                                <th>Rekomendasi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($totalScores as $score)
-                                @php
-                                    $car = $cars->where('id', $loop->iteration)->first();
-                                @endphp
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $car->nama }}</td>
-                                    <td>{{ isset($score['total']) ? $score['total'] : '' }}</td>
-                                    <td>{{ isset($score['peringkat']) ? $score['peringkat'] : '' }}</td>
-                                    <td>
-                                        @if (isset($score['peringkat']))
-                                            @if ($score['peringkat'] == 1)
-                                                Sangat Layak
-                                            @elseif ($score['peringkat'] == 2)
-                                                Layak
-                                            @elseif ($score['peringkat'] == 3)
-                                                Dipertimbangkan
-                                            @else
-                                                Tidak Layak
-                                            @endif
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
 @stop
 
 @section('js')
-    <script>
-        console.log('Hi!');
-    </script>
+
 @stop

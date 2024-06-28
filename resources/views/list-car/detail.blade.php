@@ -13,7 +13,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">
-                            <h2>{{ $car->nama }}</h2>
+                            <h2>{{ $car->name }}</h2>
                         </div>
                     </div>
                     <div class="card-body">
@@ -22,10 +22,10 @@
                                 <img src="{{ asset('images/' . $car->image_url) }}" class="card-img-top" alt="Car Image">
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Harga:</strong> {{ $car->harga->harga }}</p>
-                                <p><strong>Jumlah Seat:</strong> {{ $car->seat->jumlah_seat }}</p>
-                                <p><strong>Warna:</strong> {{ $car->warna->warna }}</p>
-                                <p><strong>Kapasitas Mesin:</strong> {{ $car->kapasitasMesin->kapasitas_mesin }}</p>
+                                <p><strong>Harga:</strong> {{ $car->price }}</p>
+                                <p><strong>Jumlah Seat:</strong> {{ $car->available_seat }}</p>
+                                <p><strong>Warna:</strong> {{ $car->color }}</p>
+                                <p><strong>Kapasitas Mesin:</strong> {{ $car->capacity_machine }}</p>
                             </div>
                         </div>
                         {{-- <hr>

@@ -13,8 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('hasils', function (Blueprint $table) {
+        Schema::create('interval_criterias', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('criteria_id')->constrained('criterias')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('range');
+            $table->integer('value');
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('hasils');
+        Schema::dropIfExists('interval_criterias');
     }
 };

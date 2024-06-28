@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\IntervalCriteria;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -15,123 +16,34 @@ class SubCriteriaTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('sub_criteria')->insert([
-            // Harga
-            [
-                'criteria_id' => 1,
-                'interval' => '>616.000.000',
-                'nilai' => 4,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'criteria_id' => 1,
-                'interval' => '380.000.000 – 540.000.000',
-                'nilai' => 3,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'criteria_id' => 1,
-                'interval' => '285.000.000 – 320.000.000',
-                'nilai' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'criteria_id' => 1,
-                'interval' => '180.000.000 – 253.100.000',
-                'nilai' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            // Jumlah Seat
-            [
-                'criteria_id' => 2,
-                'interval' => '8-9 seat',
-                'nilai' => 4,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'criteria_id' => 2,
-                'interval' => '7-8 seat',
-                'nilai' => 3,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'criteria_id' => 2,
-                'interval' => '4-5 seat',
-                'nilai' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'criteria_id' => 2,
-                'interval' => '2-3 seat',
-                'nilai' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            // Warna
-            [
-                'criteria_id' => 3,
-                'interval' => 'Putih',
-                'nilai' => 4,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'criteria_id' => 3,
-                'interval' => 'Pearl Gray Metallic',
-                'nilai' => 3,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'criteria_id' => 3,
-                'interval' => 'Hitam',
-                'nilai' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'criteria_id' => 3,
-                'interval' => 'Lainnya',
-                'nilai' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            // Kapasitas Mesin
-            [
-                'criteria_id' => 4,
-                'interval' => '1.500 CC',
-                'nilai' => 4,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'criteria_id' => 4,
-                'interval' => '1.498 CC',
-                'nilai' => 3,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'criteria_id' => 4,
-                'interval' => '1408 CC',
-                'nilai' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'criteria_id' => 4,
-                'interval' => '1.199 CC',
-                'nilai' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        IntervalCriteria::insert([
+            ['criteria_id' => 1, 'range' => '> 616000000', 'value' => 4],
+            ['criteria_id' => 1, 'range' => '380000000 - 540000000', 'value' => 3],
+            ['criteria_id' => 1, 'range' => '285000000 - 320000000', 'value' => 2],
+            ['criteria_id' => 1, 'range' => '180000000 - 253100000', 'value' => 1],
+
+            ['criteria_id' => 2, 'range' => '8-9', 'value' => 4],
+            ['criteria_id' => 2, 'range' => '7-8', 'value' => 3],
+            ['criteria_id' => 2, 'range' => '4-5', 'value' => 2],
+            ['criteria_id' => 2, 'range' => '2-3', 'value' => 1],
+
+            ['criteria_id' => 3, 'range' => 'Hitam', 'value' => 8],
+            ['criteria_id' => 3, 'range' => 'Silver', 'value' => 7],
+            ['criteria_id' => 3, 'range' => 'Merah', 'value' => 6],
+            ['criteria_id' => 3, 'range' => 'Biru', 'value' => 5],
+            ['criteria_id' => 3, 'range' => 'Putih', 'value' => 4],
+            ['criteria_id' => 3, 'range' => 'Pearl Gray Metallic', 'value' => 3],
+            ['criteria_id' => 3, 'range' => 'Hitam', 'value' => 2],
+            ['criteria_id' => 3, 'range' => 'Lainnya', 'value' => 1],
+
+            ['criteria_id' => 4, 'range' => '2500', 'value' => 8],
+            ['criteria_id' => 4, 'range' => '1800', 'value' => 7],
+            ['criteria_id' => 4, 'range' => '1500', 'value' => 6],
+            ['criteria_id' => 4, 'range' => '1498', 'value' => 5],
+            ['criteria_id' => 4, 'range' => '1408', 'value' => 4],
+            ['criteria_id' => 4, 'range' => '1300', 'value' => 3],
+            ['criteria_id' => 4, 'range' => '1200', 'value' => 2],
+            ['criteria_id' => 4, 'range' => '1199', 'value' => 1],
         ]);
     }
 }

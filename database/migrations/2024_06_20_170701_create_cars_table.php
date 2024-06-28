@@ -15,18 +15,14 @@ return new class extends Migration
     {
         Schema::create('cars', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
             $table->string('image_url')->nullable();
-            $table->unsignedBigInteger('harga_id');
-            $table->unsignedBigInteger('seat_id');
-            $table->unsignedBigInteger('warna_id');
-            $table->unsignedBigInteger('kapasitas_mesin_id');
+            $table->string('code');
+            $table->string('name');
+            $table->integer('price');
+            $table->string('color');
+            $table->integer('available_seat');
+            $table->integer('capacity_machine');
             $table->timestamps();
-
-            $table->foreign('harga_id')->references('id')->on('prices')->onDelete('cascade');
-            $table->foreign('warna_id')->references('id')->on('colors')->onDelete('cascade');
-            $table->foreign('kapasitas_mesin_id')->references('id')->on('capacities')->onDelete('cascade');
-            $table->foreign('seat_id')->references('id')->on('seats')->onDelete('cascade');
         });
     }
 

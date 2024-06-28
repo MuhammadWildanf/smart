@@ -51,7 +51,7 @@ class listCarController extends Controller
      */
     public function show($id)
     {
-        $car = Car::with(['harga', 'warna', 'seat', 'kapasitasMesin'])->findOrFail($id);
+        $car = Car::findOrFail($id);
         return view('list-car.detail', compact('car'));
     }
 

@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Update Kriteria | Dashboard')
+@section('title', 'Update Sub Kriteria | Dashboard')
 
 @section('content_header')
-    <h1>Update Data Kriteria</h1>
+    <h1>Update Data Sub Kriteria</h1>
 @stop
 
 @section('content')
@@ -11,7 +11,7 @@
         <div class="row">
             <div id="errorBox"></div>
             <div class="col-3">
-                <form method="POST" action="{{ route('cars.update', $criterion->id) }}">
+                <form method="POST" action="{{ route('subcriteria.update', $subCriterion->id) }}">
                     @method('patch')
                     @csrf
                     <div class="card">
@@ -22,33 +22,36 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label for="kode" class="form-label">Kode <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="kode" placeholder="Enter Full kode"
-                                    value="{{ $criterion->kode }}">
-                                @if ($errors->has('kode'))
-                                    <span class="text-danger">{{ $errors->first('kode') }}</span>
-                                @endif
-                            </div>
-                            <div class="form-group">
-                                <label for="criteria" class="form-label">Kriteria <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="criteria"
-                                    placeholder="Enter criteria" value="{{ $criterion->criteria }}">
-                                @if ($errors->has('criteria'))
-                                    <span class="text-danger">{{ $errors->first('criteria') }}</span>
-                                @endif
-                            </div>
-                            <div class="form-group">
-                                <label for="jenis" class="form-label">Jenis</label>
-                                <select class="form-control" name="jenis">
-                                    <option value="">Pilih Jenis</option>
-                                    @foreach ($jenisOptions as $option)
-                                        <option value="{{ $option }}"
-                                            {{ $criterion->jenis == $option ? 'selected' : '' }}>{{ $option }}
+                                <label for="criteria_id" class="form-label">Criteria <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-control" name="criteria_id">
+                                    <option value="">Pilih Kriteria</option>
+                                    @foreach ($criteria as $criterion)
+                                        <option value="{{ $criterion->id }}"
+                                            {{ (old('criteria_id') ? old('criteria_id') : $subCriterion->criteria_id) == $criterion->id ? 'selected' : '' }}>
+                                            {{ $criterion->name }} ({{ $criterion->code }})
                                         </option>
                                     @endforeach
                                 </select>
-                                @if ($errors->has('jenis'))
-                                    <span class="text-danger">{{ $errors->first('jenis') }}</span>
+                                @if ($errors->has('criteria_id'))
+                                    <span class="text-danger">{{ $errors->first('criteria_id') }}</span>
+                                @endif
+                            </div>
+                            <div class="form-group">
+                                <label for="range" class="form-label">Range <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="range"
+                                    placeholder="Masukan Nama kriteria"
+                                    value="{{ old('range') ? old('range') : $subCriterion->range }}">
+                                @if ($errors->has('range'))
+                                    <span class="text-danger">{{ $errors->first('range') }}</span>
+                                @endif
+                            </div>
+                            <div class="form-group">
+                                <label for="value" class="form-label">Value <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="value" placeholder="Masukan Nama value"
+                                    value="{{ old('value') ? old('value') : $subCriterion->value }}">
+                                @if ($errors->has('value'))
+                                    <span class="text-danger">{{ $errors->first('value') }}</span>
                                 @endif
                             </div>
                         </div>

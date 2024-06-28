@@ -2,134 +2,164 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
-use App\Models\capacities;
 use App\Models\Car;
-use App\Models\colors;
-use App\Models\Criterion;
-use App\Models\prices;
-use App\Models\seats;
-use App\Models\SubCriterion;
+use App\Models\Criteria;
+use App\Models\IntervalCriteria;
 use Illuminate\Http\Request;
 
 class RecomendationController extends Controller
 {
     public function index(Request $request)
     {
-        $criteria = Criterion::with('subCriteria')->get();
+        $query = Car::when($request->price != "", function ($query, $price) use ($request) {
+            $query->where('price', '>=', $this->getMinValue('price', $request->price));
+            if ($this->getMaxValue('price', $request->price) != null) {
+                $query->where('price', '<=', $this->getMaxValue('price', $request->price));
+            }
+        })->when($request->available_seat != "", function ($query, $available_seat) use ($request) {
+            $query->where('available_seat', $this->getValue('available_seat', $request->available_seat));
+        })->when($request->color != "", function ($query, $color) use ($request) {
+            $query->where('color', $this->getValue('color', $request->color));
+        })->when($request->capacity_machine != "", function ($query, $capacity_machine) use ($request) {
+            $query->where('capacity_machine', $this->getValue('capacity_machine', $request->capacity_machine));
+        });
+        // Ambil query mobil
+        $cars = $query->get();
 
-        $selectedSubCriteria = [
-            'C1' => $request->input('harga_sub_criteria'),
-            'C2' => $request->input('seat_sub_criteria'),
-            'C3' => $request->input('warna_sub_criteria'),
-            'C4' => $request->input('kapasitas_sub_criteria'),
-        ];
+        $criterias = Criteria::with('intervalCriteria')->get();
 
-        $cars = Car::all();
-        $prices = prices::all();
-        $seats = seats::all();
-        $colors = colors::all();
-        $capacities = capacities::all();
+        $intervalCriteria = [];
+        foreach ($criterias as $criteria) {
+            $intervalCriteria[$criteria->slug] = $criteria->intervalCriteria;
+        }
 
-        $utilitiValues = [];
+        $alternatives = [];
+
         foreach ($cars as $car) {
-            $utilitiValues[$car->id] = [
-                'nama' => $car->nama,
-                'C1' => $this->calculateUtiliti($car->harga_id, 'cost', $criteria->where('kode', 'C1')->first()->subCriteria, $selectedSubCriteria['C1']),
-                'C2' => $this->calculateUtiliti($car->seat_id, 'benefit', $criteria->where('kode', 'C2')->first()->subCriteria, $selectedSubCriteria['C2']),
-                'C3' => $this->calculateUtiliti($car->warna_id, 'benefit', $criteria->where('kode', 'C3')->first()->subCriteria, $selectedSubCriteria['C3']),
-                'C4' => $this->calculateUtiliti($car->kapasitas_mesin_id, 'benefit', $criteria->where('kode', 'C4')->first()->subCriteria, $selectedSubCriteria['C4']),
+            $car_alternatives = [];
+            foreach ($criterias as $criteria) {
+                $value = $car->{$criteria->slug};
+                $interval_value = $this->getIntervalValue($criteria, $value);
+                $car_alternatives[$criteria->slug] = $interval_value;
+            }
+            $alternatives[$car->code] = $car_alternatives;
+        }
+
+        $minMaxValues = [];
+        foreach ($criterias as $criteria) {
+            $criterion_slug = $criteria->slug;
+            $values = array_column($alternatives, $criterion_slug);
+            $minMaxValues[$criterion_slug] = [
+                'min' => min($values),
+                'max' => max($values)
             ];
         }
 
-        $totalScores = $this->calculateTotalScore($utilitiValues, $criteria, $selectedSubCriteria);
-        $totalScores = $this->calculateRank($utilitiValues, $totalScores);
+        // dd($minMaxValues);
 
-        $cars = $this->convertAttributesToDecimal($cars);
+        foreach ($cars as $car) {
+            foreach ($criterias as $criteria) {
+                $criterion_slug = $criteria->slug;
+                $interval_value = $alternatives[$car->code][$criterion_slug];
+                $utility_value = $this->calculateUtility(
+                    $criteria,
+                    $interval_value,
+                    $minMaxValues[$criterion_slug]['min'],
+                    $minMaxValues[$criterion_slug]['max']
+                );
 
-        return view('recomendation.index', compact('cars', 'utilitiValues', 'criteria', 'totalScores', 'prices', 'seats', 'colors', 'capacities'));
+                $alternatives[$car->code][$criterion_slug] = $utility_value;
+            }
+        }
+        // Hitung total skor berdasarkan nilai utilitas dan bobot kriteria
+        foreach ($cars as $car) {
+            $total_score = 0;
+            foreach ($criterias as $criteria) {
+                $total_score += $alternatives[$car->code][$criteria->slug] * $criteria->normalisasi;
+            }
+            $car->total_score = $total_score;
+        }
+
+        // Urutkan mobil berdasarkan total score (descending)
+        $cars = $cars->sortByDesc('total_score');
+
+        return view('recomendation.index', compact('cars', 'criterias', 'alternatives', 'intervalCriteria'));
     }
 
-    private function calculateUtiliti($value, $type, $subCriteria, $selectedSubCriteria)
+    private function getIntervalValue($criteria, $value)
     {
-        if (!$selectedSubCriteria) {
-            return 0;
-        }
-
-        $max = null;
-        $min = null;
-
-        foreach ($subCriteria as $subCriterion) {
-            if ($max === null || $subCriterion->nilai > $max) {
-                $max = $subCriterion->nilai;
-            }
-
-            if ($min === null || $subCriterion->nilai < $min) {
-                $min = $subCriterion->nilai;
+        foreach ($criteria->intervalCriteria as $interval) {
+            $range = explode(' ', $interval->range);
+            if (count($range) == 2 && $range[0] == '>') {
+                if ($value > (int) $range[1]) {
+                    return $interval->value;
+                }
+            } elseif (count($range) == 3 && $range[1] == '-') {
+                if ($value >= (int) $range[0] && $value <= (int) $range[2]) {
+                    return $interval->value;
+                }
+            } elseif ($value == (int) $range[0] || $value == $range[0]) {
+                return $interval->value;
             }
         }
-
-        if ($max === null || $min === null || $max == $min) {
-            return 0;
-        }
-
-        $value = floatval(str_replace(',', '.', $value));
-
-        if (strtolower($type) == 'cost') {
-            return ($max - $value) / ($max - $min) * 100;
-        } elseif (strtolower($type) == 'benefit') {
-            return ($value - $min) / ($max - $min) * 100;
-        }
-
         return 0;
     }
 
-    private function calculateTotalScore($utilitiValues, $criteria, $selectedSubCriteria)
+    private function calculateUtility($criteria, $interval_value, $min_value, $max_value)
     {
-        $totalScores = [];
-        foreach ($utilitiValues as $carId => $values) {
-            $total = 0;
-            foreach ($criteria as $criterion) {
-                $kode = $criterion->kode;
-                $weight = $criterion->weight;
-                if ($selectedSubCriteria[$kode]) {
-                    $total += $values[$kode] * $weight;
-                }
-            }
-            $totalScores[$carId] = [
-                'nama' => $values['nama'],
-                'C1' => $values['C1'],
-                'C2' => $values['C2'],
-                'C3' => $values['C3'],
-                'C4' => $values['C4'],
-                'total' => $total,
-            ];
+        if ($max_value == $min_value) {
+            return 1;
         }
-        return $totalScores;
+
+        if ($criteria->type == 'cost') {
+            return ($max_value - $interval_value) / ($max_value - $min_value);
+        } else {
+            return ($interval_value - $min_value) / ($max_value - $min_value);
+        }
     }
 
-    private function calculateRank($utilitiValues, $totalScores)
-    {
-        uasort($totalScores, function ($a, $b) {
-            return $b['total'] <=> $a['total'];
-        });
 
-        $rank = 1;
-        foreach ($totalScores as $carId => &$score) {
-            $score['peringkat'] = $rank++;
+    private function getMinValue($criteria, $value)
+    {
+        $range = IntervalCriteria::where('criteria_id', Criteria::where('slug', $criteria)->first()->id)
+            ->where('id', $value)
+            ->first()
+            ->range;
+
+        // Pisahkan nilai batas bawah dari range
+        $parts = explode(' - ', $range);
+        if (count($parts) == 2) {
+            return (int) str_replace('.', '', $parts[0]);
+        } elseif (substr($range, 0, 1) == '>') {
+            return (int) str_replace('.', '', substr($range, 1));
+        } else {
+            return 0; // Handle jika format range tidak sesuai
         }
-        return $totalScores;
     }
 
-    private function convertAttributesToDecimal($cars)
+    private function getMaxValue($criteria, $value)
     {
-        foreach ($cars as $car) {
-            $car->harga_id_decimal = number_format($car->harga_id / 100, 2, ',', '.');
-            $car->seat_id_decimal = number_format($car->seat_id / 100, 2, ',', '.');
-            $car->warna_id_decimal = number_format($car->warna_id / 100, 2, ',', '.');
-            $car->kapasitas_mesin_id_decimal = number_format($car->kapasitas_mesin_id / 100, 2, ',', '.');
-        }
+        $range = IntervalCriteria::where('criteria_id', Criteria::where('slug', $criteria)->first()->id)
+            ->where('id', $value)
+            ->first()
+            ->range;
 
-        return $cars;
+        // Pisahkan nilai batas atas dari range
+        $parts = explode(' - ', $range);
+        if (count($parts) == 2) {
+            return (int) str_replace('.', '', $parts[1]);
+        } elseif (substr($range, 0, 1) == '>') {
+            return null; // Jika format >, maka batas atas tidak ada
+        } else {
+            return (int) str_replace('.', '', $range); // Handle jika format range tunggal
+        }
+    }
+
+    private function getValue($criteria, $value)
+    {
+        return IntervalCriteria::where('criteria_id', Criteria::where('slug', $criteria)->first()->id)
+            ->where('value', $value)
+            ->first()
+            ->range;
     }
 }

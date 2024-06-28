@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\capacities;
 use DataTables;
 use Carbon\Carbon;
 use App\Models\Car;
-use App\Models\colors;
-use App\Models\prices;
-use App\Models\seats;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -22,15 +18,12 @@ class CarsController extends Controller
      */
     public function index(Request $request)
     {
-        $prices = prices::all();
-        $colos = colors::all();
-        $seats = seats::all();
-        $capacities = capacities::all();
+        
 
         if ($request->ajax()) {
             return $this->getCars();
         }
-        return view('cars.index', compact('prices', 'colos', 'seats', 'capacities'));
+        return view('cars.index');
     }
 
     /**
@@ -52,11 +45,12 @@ class CarsController extends Controller
     public function store(Request $request, Car $car)
     {
         $this->validate($request, [
-            'nama' => 'required',
-            'harga_id' => 'required',
-            'warna_id' => 'required',
-            'kapasitas_mesin_id' => 'required',
-            'seat_id' => 'required',
+            'code' => 'required',
+            'name' => 'required',
+            'price' => 'required',
+            'color' => 'required',
+            'capacity_machine' => 'required',
+            'available_seat' => 'required',
             'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -97,12 +91,8 @@ class CarsController extends Controller
      */
     public function edit(Car $car)
     {
-        $prices = prices::all();
-        $colos = colors::all();
-        $seats = seats::all();
-        $capacities = capacities::all();
 
-        return view('cars.edit', ['car' => $car, 'prices' => $prices, 'colos' => $colos, 'seats' => $seats, 'capacities' => $capacities]);
+        return view('cars.edit', ['car' => $car]);
     }
 
     /**
@@ -115,11 +105,12 @@ class CarsController extends Controller
     public function update(Request $request, Car $car)
     {
         $this->validate($request, [
-            'nama' => 'required',
-            'harga_id' => 'required',
-            'warna_id' => 'required',
-            'kapasitas_mesin_id' => 'required',
-            'seat_id' => 'required',
+            'code' => 'required',
+            'name' => 'required',
+            'price' => 'required',
+            'color' => 'required',
+            'capacity_machine' => 'required',
+            'available_seat' => 'required',
             'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -173,18 +164,6 @@ class CarsController extends Controller
             ->addColumn('image_url', function ($row) {
                 return '<img src="' . asset('images/' . $row->image_url) . '" alt="Image" width="50" height="50">';
             })
-            ->addColumn('harga', function ($row) {
-                return $row->harga->harga;
-            })
-            ->addColumn('warna', function ($row) {
-                return $row->warna->warna;
-            })
-            ->addColumn('kapasitas_mesin', function ($row) {
-                return $row->kapasitasMesin->kapasitas_mesin;
-            })
-            ->addColumn('seat', function ($row) {
-                return $row->seat->jumlah_seat;
-            })
             ->addColumn('action', function ($row) {
                 $action = "";
                 if (Auth::user()->can('cars.edit')) {
@@ -195,6 +174,6 @@ class CarsController extends Controller
                 }
                 return $action;
             })
-            ->rawColumns(['image_url', 'nama', 'harga_id', 'warna_id', 'kapasitas_mesin_id', 'seat_id', 'action'])->make('true');
+            ->rawColumns(['image_url','code', 'name', 'price', 'color', 'available_seat', 'capacity_machine', 'action'])->make('true');
     }
 }

@@ -13,9 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('capacities', function (Blueprint $table) {
+        Schema::create('criterias', function (Blueprint $table) {
             $table->id();
-            $table->string('kapasitas_mesin');
+            $table->string('code');
+            $table->string('name');
+            $table->string('slug');
+            $table->string('bobot');
+            $table->decimal('normalisasi', 5, 2);
+            $table->enum('type', ['benefit', 'cost']);
             $table->timestamps();
         });
     }
@@ -27,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('capacities');
+        Schema::dropIfExists('criterias');
     }
 };

@@ -22,11 +22,19 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label for="nama" class="form-label">Nama <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="nama" placeholder="Masukkan Nama Mobil"
-                                    value="{{ $car->nama }}">
-                                @if ($errors->has('nama'))
-                                    <span class="text-danger">{{ $errors->first('nama') }}</span>
+                                <label for="code" class="form-label">Code <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="code" placeholder="Masukkan code"
+                                    value="{{ $car->code }}">
+                                @if ($errors->has('code'))
+                                    <span class="text-danger">{{ $errors->first('code') }}</span>
+                                @endif
+                            </div>
+                            <div class="form-group">
+                                <label for="name" class="form-label">Nama <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="name" placeholder="Masukkan nama Mobil"
+                                    value="{{ $car->name }}">
+                                @if ($errors->has('name'))
+                                    <span class="text-danger">{{ $errors->first('name') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
@@ -37,55 +45,35 @@
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="harga_id" class="form-label">Harga <span class="text-danger">*</span></label>
-                                <select class="form-control" name="harga_id">
-                                    @foreach ($prices as $harga)
-                                        <option value="{{ $harga->id }}"
-                                            {{ $car->harga_id == $harga->id ? 'selected' : '' }}>{{ $harga->harga }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @if ($errors->has('harga_id'))
-                                    <span class="text-danger">{{ $errors->first('harga_id') }}</span>
+                                <label for="price" class="form-label">Harga <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="price" placeholder="Masukkan harga"
+                                    value="{{ $car->price }}">
+                                @if ($errors->has('price'))
+                                    <span class="text-danger">{{ $errors->first('price') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="seat_id" class="form-label">Jumlah Seat</label>
-                                <select class="form-control" name="seat_id">
-                                    @foreach ($seats as $seat)
-                                        <option value="{{ $seat->id }}"
-                                            {{ $car->seat_id == $seat->id ? 'selected' : '' }}>{{ $seat->jumlah_seat }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @if ($errors->has('seat_id'))
-                                    <span class="text-danger">{{ $errors->first('seat_id') }}</span>
+                                <label for="color" class="form-label">Warna <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="color" placeholder="Masukkan Warna"
+                                    value="{{ $car->color }}">
+                                @if ($errors->has('color'))
+                                    <span class="text-danger">{{ $errors->first('color') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="warna_id" class="form-label">Warna</label>
-                                <select class="form-control" name="warna_id">
-                                    @foreach ($colos as $warna)
-                                        <option value="{{ $warna->id }}"
-                                            {{ $car->warna_id == $warna->id ? 'selected' : '' }}>{{ $warna->warna }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @if ($errors->has('warna_id'))
-                                    <span class="text-danger">{{ $errors->first('warna_id') }}</span>
+                                <label for="available_seat" class="form-label">Jumlah Seat <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="available_seat" placeholder="Masukkan JUmlah Seat"
+                                    value="{{ $car->available_seat }}">
+                                @if ($errors->has('available_seat'))
+                                    <span class="text-danger">{{ $errors->first('available_seat') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="kapasitas_mesin_id" class="form-label">Kapasitas Mesin</label>
-                                <select class="form-control" name="kapasitas_mesin_id">
-                                    @foreach ($capacities as $kapasitas)
-                                        <option value="{{ $kapasitas->id }}"
-                                            {{ $car->kapasitas_mesin_id == $kapasitas->id ? 'selected' : '' }}>
-                                            {{ $kapasitas->kapasitas_mesin }}</option>
-                                    @endforeach
-                                </select>
-                                @if ($errors->has('kapasitas_mesin_id'))
-                                    <span class="text-danger">{{ $errors->first('kapasitas_mesin_id') }}</span>
+                                <label for="capacity_machine" class="form-label">Kapasitas Mesin <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="capacity_machine" placeholder="Masukkan Kapasitas Mesin"
+                                    value="{{ $car->capacity_machine }}">
+                                @if ($errors->has('capacity_machine'))
+                                    <span class="text-danger">{{ $errors->first('capacity_machine') }}</span>
                                 @endif
                             </div>
                         </div>

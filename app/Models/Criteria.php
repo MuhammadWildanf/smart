@@ -5,17 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Car extends Model
+class Criteria extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'image_url',
         'code',
         'name',
-        'price',
-        'color',
-        'available_seat',
-        'capacity_machine'
+        'slug',
+        'bobot',
+        'normalisasi',
+        'type',
     ];
+
+    public function intervalCriteria()
+    {
+        return $this->hasMany(IntervalCriteria::class);
+    }
 }

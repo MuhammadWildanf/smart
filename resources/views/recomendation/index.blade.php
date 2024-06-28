@@ -7,119 +7,237 @@
 @stop
 
 @section('content')
-    <div class="row">
-        <form method="GET" action="{{ route('recomendation.index') }}">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <h5>Masukan Bobot</h5>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="card card-outline card-primary">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h5>Filter Mobil</h5>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="harga_sub_criteria" class="form-label">Harga <span class="text-danger">*</span></label>
-                        <select class="form-control" name="harga_sub_criteria">
-                            <option value="">Pilih Harga</option>
-                            @foreach ($prices as $harga)
-                                <option value="{{ $harga->id }}"
-                                    {{ old('harga_sub_criteria') == $harga->id ? 'selected' : '' }}>
-                                    {{ $harga->harga }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @if ($errors->has('harga_sub_criteria'))
-                            <span class="text-danger">{{ $errors->first('harga_sub_criteria') }}</span>
-                        @endif
+                    <div class="card-body">
+                        <form method="GET" action="{{ route('recomendation.index') }}">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="price">Harga:</label>
+                                        <select name="price" id="price" class="form-control">
+                                            <option value="">Semua</option>
+                                            @foreach ($intervalCriteria['price'] as $interval)
+                                                <option @if (old('price') == $interval->id) selected @endif
+                                                    value="{{ $interval->id }}">
+                                                    {{ $interval->range }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="available_seat">Jumlah Seat:</label>
+                                        <select name="available_seat" id="available_seat" class="form-control">
+                                            <option value="">Semua</option>
+                                            @foreach ($intervalCriteria['available_seat'] as $interval)
+                                                <option @if (old('available_seat') == $interval->id) selected @endif
+                                                    value="{{ $interval->value }}">
+                                                    {{ $interval->range }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="color">Warna:</label>
+                                        <select name="color" id="color" class="form-control">
+                                            <option value="">Semua</option>
+                                            @foreach ($intervalCriteria['color'] as $interval)
+                                                <option @if (old('color') == $interval->value) selected @endif
+                                                    value="{{ $interval->value }}">
+                                                    {{ $interval->range }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="capacity_machine">Kapasitas Mesin:</label>
+                                        <select name="capacity_machine" id="capacity_machine" class="form-control">
+                                            <option value="">Semua</option>
+                                            @foreach ($intervalCriteria['capacity_machine'] as $interval)
+                                                <option @if (old('capacity_machine') == $interval->value) selected @endif
+                                                    value="{{ $interval->value }}">
+                                                    {{ $interval->range }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm mt-3">Filter</button>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label for="seat_sub_criteria" class="form-label">Jumlah Seat</label>
-                        <select class="form-control" name="seat_sub_criteria">
-                            <option value="">Pilih Jumlah Seat</option>
-                            @foreach ($seats as $seat)
-                                <option value="{{ $seat->id }}"
-                                    {{ old('seat_sub_criteria') == $seat->id ? 'selected' : '' }}>
-                                    {{ $seat->jumlah_seat }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @if ($errors->has('seat_sub_criteria'))
-                            <span class="text-danger">{{ $errors->first('seat_sub_criteria') }}</span>
-                        @endif
-                    </div>
-                    <div class="form-group">
-                        <label for="warna_sub_criteria" class="form-label">Warna</label>
-                        <select class="form-control" name="warna_sub_criteria">
-                            <option value="">Pilih Warna</option>
-                            @foreach ($colors as $warna)
-                                <option value="{{ $warna->id }}"
-                                    {{ old('warna_sub_criteria') == $warna->id ? 'selected' : '' }}>
-                                    {{ $warna->warna }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @if ($errors->has('warna_sub_criteria'))
-                            <span class="text-danger">{{ $errors->first('warna_sub_criteria') }}</span>
-                        @endif
-                    </div>
-                    <div class="form-group">
-                        <label for="kapasitas_sub_criteria" class="form-label">Kapasitas Mesin</label>
-                        <select class="form-control" name="kapasitas_sub_criteria">
-                            <option value="">Pilih Kapasitas Mesin</option>
-                            @foreach ($capacities as $kapasitas_mesin)
-                                <option value="{{ $kapasitas_mesin->id }}"
-                                    {{ old('kapasitas_sub_criteria') == $kapasitas_mesin->id ? 'selected' : '' }}>
-                                    {{ $kapasitas_mesin->kapasitas_mesin }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @if ($errors->has('kapasitas_sub_criteria'))
-                            <span class="text-danger">{{ $errors->first('kapasitas_sub_criteria') }}</span>
-                        @endif
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </div>
-        </form>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <h5>Hasil Perhitungan</h5>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Nama</th>
-                                <th>Harga (C1)</th>
-                                <th>Jumlah Seat (C2)</th>
-                                <th>Warna (C3)</th>
-                                <th>Kapasitas Mesin (C4)</th>
-                                <th>Total Skor</th>
-                                <th>Peringkat</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($totalScores as $score)
-                                <tr>
-                                    <td>{{ $score['nama'] }}</td>
-                                    <td>{{ number_format($score['C1'], 2) }}</td>
-                                    <td>{{ number_format($score['C2'], 2) }}</td>
-                                    <td>{{ number_format($score['C3'], 2) }}</td>
-                                    <td>{{ number_format($score['C4'], 2) }}</td>
-                                    <td>{{ number_format($score['total'], 2) }}</td>
-                                    <td>{{ $score['peringkat'] }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
+
+        {{-- <h5>Nilai Kriteria</h5>
+    <table>
+        <thead>
+            <tr>
+                <th>Kriteria</th>
+                <th>Interval</th>
+                <th>Nilai</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($criterias as $criteria)
+                <tr>
+                    <td>{{ $criteria->name }}</td>
+                    <td>
+                        @foreach ($criteria->intervalCriteria as $interval)
+                            {{ $interval->range }} ({{ $interval->value }}) <br>
+                        @endforeach
+                    </td>
+                    <td>
+                        @foreach ($criteria->intervalCriteria as $interval)
+                            {{ $interval->value }} <br>
+                        @endforeach
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table> --}}
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h5>Nilai Kriteria untuk Setiap Mobil</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped dataTable dtr-inline">
+                                <thead>
+                                    <tr>
+                                        <th>Kode Mobil</th>
+                                        <th>Nama</th>
+                                        @foreach ($criterias as $criteria)
+                                            <th>{{ $criteria->code }}</th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($cars as $car)
+                                        <tr>
+                                            <td>{{ $car->code }}</td>
+                                            <td>{{ $car->name }}</td>
+                                            @foreach ($criterias as $criteria)
+                                                @php
+                                                    $value = $car->{$criteria->slug};
+                                                    $interval_value = getIntervalValue($criteria, $value);
+                                                @endphp
+                                                <td>{{ $value }} ({{ $interval_value }})</td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h5>Nilai Alternatif (Utility)</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped dataTable dtr-inline">
+                                <thead>
+                                    <tr>
+                                        <th>Kode Mobil</th>
+                                        @foreach ($criterias as $criteria)
+                                            <th>{{ $criteria->code }}</th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($cars as $car)
+                                        <tr>
+                                            <td>{{ $car->code }}</td>
+                                            @foreach ($criterias as $criteria)
+                                                <td>{{ number_format($alternatives[$car->code][$criteria->slug], 4) }}</td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h5>Ranking Mobil</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped dataTable dtr-inline">
+                                <thead>
+                                    <tr>
+                                        <th>Ranking</th>
+                                        <th>Kode</th>
+                                        <th>Nama</th>
+                                        <th>Harga</th>
+                                        <th>Jumlah Seat</th>
+                                        <th>Warna</th>
+                                        <th>Kapasitas Mesin</th>
+                                        <th>Total Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($cars as $index => $car)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $car->code }}</td>
+                                            <td>{{ $car->name }}</td>
+                                            <td>{{ $car->price }}</td>
+                                            <td>{{ $car->available_seat }}</td>
+                                            <td>{{ $car->color }}</td>
+                                            <td>{{ $car->capacity_machine }}</td>
+                                            <td>{{ number_format($car->total_score, 4) }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
+    </div>
+
 @stop

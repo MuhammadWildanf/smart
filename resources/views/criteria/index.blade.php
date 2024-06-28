@@ -21,40 +21,57 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label for="kode" class="form-label">Kode <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="kode" placeholder="ex: C1"
-                                    value="{{ old('kode') }}">
-                                @if ($errors->has('kode'))
-                                    <span class="text-danger">{{ $errors->first('kode') }}</span>
+                                <label for="code" class="form-label">kode <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="code" placeholder="ex: C1"
+                                    value="{{ old('code') }}">
+                                @if ($errors->has('code'))
+                                    <span class="text-danger">{{ $errors->first('code') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="criteria" class="form-label">Kriteria <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="criteria" placeholder="Masukan kriteria"
-                                    value="{{ old('criteria') }}">
-                                @if ($errors->has('criteria'))
-                                    <span class="text-danger">{{ $errors->first('criteria') }}</span>
+                                <label for="name" class="form-label">Nama <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="name"
+                                    placeholder="Masukan Nama kriteria" value="{{ old('name') }}">
+                                @if ($errors->has('name'))
+                                    <span class="text-danger">{{ $errors->first('name') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="weight" class="form-label">Bobot <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" name="weight" step="0.01" min="0" max="1" placeholder="Masukan kriteria"
-                                    value="{{ old('weight') }}">
-                                @if ($errors->has('weight'))
-                                    <span class="text-danger">{{ $errors->first('weight') }}</span>
+                                <label for="slug" class="form-label">Slug <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="slug" placeholder="Masukan Nama Slug"
+                                    value="{{ old('slug') }}">
+                                @if ($errors->has('slug'))
+                                    <span class="text-danger">{{ $errors->first('slug') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="jenis" class="form-label">Jenis</label>
-                                <select class="form-control" name="jenis">
-                                    <option value="">Pilih Jenis</option>
-                                    <option value="Cost" {{ old('jenis') == 'Cost' ? 'selected' : '' }}>Cost</option>
-                                    <option value="Benefit" {{ old('jenis') == 'Benefit' ? 'selected' : '' }}>Benefit
+                                <label for="bobot" class="form-label">Bobot <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="bobot" placeholder="Masukan bobot"
+                                    value="{{ old('bobot') }}">
+                                @if ($errors->has('bobot'))
+                                    <span class="text-danger">{{ $errors->first('bobot') }}</span>
+                                @endif
+                            </div>
+                            <div class="form-group">
+                                <label for="normalisasi" class="form-label">Normalisasi <span
+                                        class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="normalisasi" step="0.01" min="0"
+                                    max="1" placeholder="Masukan kriteria" value="{{ old('normalisasi') }}">
+                                @if ($errors->has('normalisasi'))
+                                    <span class="text-danger">{{ $errors->first('normalisasi') }}</span>
+                                @endif
+                            </div>
+                            <div class="form-group">
+                                <label for="type" class="form-label">Type</label>
+                                <select class="form-control" name="type">
+                                    <option value="">Pilih Type</option>
+                                    <option value="cost" {{ old('type') == 'cost' ? 'selected' : '' }}>Cost</option>
+                                    <option value="benefit" {{ old('type') == 'benefit' ? 'selected' : '' }}>Benefit
                                     </option>
                                 </select>
-                                @if ($errors->has('jenis'))
-                                    <span class="text-danger">{{ $errors->first('jenis') }}</span>
-                                @endif
+                                @error('type')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
 
                         </div>
@@ -79,9 +96,11 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Kode</th>
-                                        <th>kriteria</th>
+                                        <th>Name</th>
+                                        <th>Slug</th>
                                         <th>Bobot</th>
-                                        <th>jenis</th>
+                                        <th>Normalisasi</th>
+                                        <th>type</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -120,20 +139,28 @@
                         name: 'id'
                     },
                     {
-                        data: 'kode',
-                        name: 'kode'
+                        data: 'code',
+                        name: 'code'
                     },
                     {
-                        data: 'criteria',
-                        name: 'criteria'
+                        data: 'name',
+                        name: 'name'
                     },
                     {
-                        data: 'weight',
-                        name: 'weight'
+                        data: 'slug',
+                        name: 'slug'
                     },
                     {
-                        data: 'jenis',
-                        name: 'jenis'
+                        data: 'bobot',
+                        name: 'bobot'
+                    },
+                    {
+                        data: 'normalisasi',
+                        name: 'normalisasi'
+                    },
+                    {
+                        data: 'type',
+                        name: 'type'
                     },
                     {
                         data: 'action',

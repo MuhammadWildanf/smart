@@ -11,7 +11,7 @@
         <div class="row">
             <div id="errorBox"></div>
             <div class="col-3">
-                <form method="POST" action="{{ route('cars.update', $criterion->id) }}">
+                <form method="POST" action="{{ route('criteria.update', $criterion->id) }}">
                     @method('patch')
                     @csrf
                     <div class="card">
@@ -22,41 +22,61 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label for="kode" class="form-label">Kode <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="kode" placeholder="Enter Full kode"
-                                    value="{{ $criterion->kode }}">
-                                @if ($errors->has('kode'))
-                                    <span class="text-danger">{{ $errors->first('kode') }}</span>
+                                <label for="code" class="form-label">Kode <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="code" placeholder="Enter Full code"
+                                    value="{{ $criterion->code }}">
+                                @if ($errors->has('code'))
+                                    <span class="text-danger">{{ $errors->first('code') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="criteria" class="form-label">Kriteria <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="criteria"
-                                    placeholder="Enter criteria" value="{{ $criterion->criteria }}">
-                                @if ($errors->has('criteria'))
-                                    <span class="text-danger">{{ $errors->first('criteria') }}</span>
+                                <label for="name" class="form-label">Nama Kriteria <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="name" placeholder="Enter name"
+                                    value="{{ $criterion->name }}">
+                                @if ($errors->has('name'))
+                                    <span class="text-danger">{{ $errors->first('name') }}</span>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <label for="slug" class="form-label">Nama Slug <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="slug" placeholder="Enter slug"
+                                    value="{{ $criterion->slug }}">
+                                @if ($errors->has('slug'))
+                                    <span class="text-danger">{{ $errors->first('slug') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="weight" class="form-label">Bobot <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" name="weight" step="0.01" min="0" max="1"
-                                    placeholder="Enter weight" value="{{ $criterion->weight }}">
-                                @if ($errors->has('weight'))
-                                    <span class="text-danger">{{ $errors->first('weight') }}</span>
+                                <label for="bobot" class="form-label">Bobot <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="bobot" placeholder="Enter bobot" value="{{ $criterion->bobot }}">
+                                @if ($errors->has('bobot'))
+                                    <span class="text-danger">{{ $errors->first('bobot') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="jenis" class="form-label">Jenis</label>
-                                <select class="form-control" name="jenis">
-                                    <option value="">Pilih Jenis</option>
-                                    @foreach ($jenisOptions as $option)
+                                <label for="normalisasi" class="form-label">Normalisasi <span
+                                        class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="normalisasi" step="0.01" min="0"
+                                    max="1" placeholder="Enter normalisasi Ex. 0.20"
+                                    value="{{ $criterion->normalisasi }}">
+                                @if ($errors->has('normalisasi'))
+                                    <span class="text-danger">{{ $errors->first('normalisasi') }}</span>
+                                @endif
+                            </div>
+                            <div class="form-group">
+                                <label for="type" class="form-label">Type</label>
+                                <select class="form-control" name="type">
+                                    <option value="">Select Type</option>
+                                    @foreach ($typeOptions as $option)
                                         <option value="{{ $option }}"
-                                            {{ $criterion->jenis == $option ? 'selected' : '' }}>{{ $option }}
+                                            {{ $criterion->type == $option ? 'selected' : '' }}>{{ $option }}
                                         </option>
                                     @endforeach
                                 </select>
-                                @if ($errors->has('jenis'))
-                                    <span class="text-danger">{{ $errors->first('jenis') }}</span>
+                                @if ($errors->has('type'))
+                                    <span class="text-danger">{{ $errors->first('type') }}</span>
                                 @endif
                             </div>
                         </div>

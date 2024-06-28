@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Criteria;
 use App\Models\Criterion;
+use App\Models\IntervalCriteria;
 use DataTables;
 use App\Models\SubCriterion;
 use Illuminate\Http\Request;
@@ -18,7 +20,11 @@ class SubCriteriaController extends Controller
      */
     public function index(Request $request)
     {
-        $criteria = Criterion::with('subCriteria')->get();
+        $criteria = Criteria::all();
+
+        if ($request->ajax()) {
+            return $this->getSubCriteria();
+        }
         return view('subcriteria.index', compact('criteria'));
     }
 
@@ -29,7 +35,7 @@ class SubCriteriaController extends Controller
      */
     public function create()
     {
-        $criteria = Criterion::all(); // Ambil semua kriteria untuk pilihan dropdown
+        $criteria = Criteria::all(); // Ambil semua kriteria untuk pilihan dropdown
 
         return view('subcriteria.create', compact('criteria'));
     }
@@ -40,20 +46,20 @@ class SubCriteriaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, SubCriterion $subCriterion)
+    public function store(Request $request, IntervalCriteria $subCriterion)
     {
         $this->validate($request, [
-            'criteria_id' => 'required|exists:criteria,id',
-            'interval' => 'required|string|max:255',
-            'nilai' => 'required|numeric',
+            'criteria_id' => 'required',
+            'range' => 'required|string|max:255',
+            'value' => 'required|numeric',
         ]);
-    
-        $subCriterion = new SubCriterion;
+
+        $subCriterion = new IntervalCriteria;
         $subCriterion->criteria_id = $request->criteria_id;
-        $subCriterion->interval = $request->interval;
-        $subCriterion->nilai = $request->nilai;
+        $subCriterion->range = $request->range;
+        $subCriterion->value = $request->value;
         $subCriterion->save();
-    
+
         if ($subCriterion) {
             toast('New SubCriteria Created Successfully.', 'success');
             return Redirect::back();
@@ -70,7 +76,8 @@ class SubCriteriaController extends Controller
      */
     public function show($id)
     {
-        //
+        $subCriterion = IntervalCriteria::findOrFail($id);
+        return response()->json($subCriterion);
     }
 
     /**
@@ -79,12 +86,12 @@ class SubCriteriaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(SubCriterion $subCriterion)
+    public function edit($id)
     {
+        $subCriterion = IntervalCriteria::findOrFail($id);
+        $criteria = Criteria::all();
 
-        return view('criteria.edit', [
-            'criterion' => $subCriterion,
-        ]);
+        return view('subcriteria.edit', compact('subCriterion', 'criteria'));
     }
 
     /**
@@ -94,22 +101,25 @@ class SubCriteriaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, SubCriterion $subCriterion)
+    public function update(Request $request, $id)
     {
         $this->validate($request, [
             'criteria_id' => 'required',
-            'interval' => 'required',
-            'nilai' => 'required',
-            'score' => 'required',
+            'range' => 'required|string|max:255',
+            'value' => 'required|numeric',
         ]);
-
-        $subCriterion->update($request->all());
-
+    
+        $subCriterion = IntervalCriteria::findOrFail($id);
+        $subCriterion->criteria_id = $request->criteria_id;
+        $subCriterion->range = $request->range;
+        $subCriterion->value = $request->value;
+        $subCriterion->save();
+    
         if ($subCriterion) {
-            toast('Criteria Updated Successfully.', 'success');
-            return Redirect::to('criteria');
+            toast('Subcriteria Updated Successfully.', 'success');
+            return Redirect::to('subcriteria');
         }
-        toast('Error in Criteria Update', 'error');
+        toast('Error in Subcriteria Update', 'error');
         return back()->withInput();
     }
 
@@ -119,7 +129,7 @@ class SubCriteriaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, SubCriterion $subCriterion)
+    public function destroy(Request $request, IntervalCriteria $subCriterion)
     {
         if ($request->ajax() && $subCriterion->delete()) {
             return response(["message" => "SubCriteria Deleted Successfully"], 200);
@@ -129,11 +139,11 @@ class SubCriteriaController extends Controller
 
     private function getSubCriteria()
     {
-        $data = SubCriterion::select('sub_criteria.*', 'criteria.criteria as criteria_name')
-            ->leftJoin('criteria', 'sub_criteria.criteria_id', '=', 'criteria.id')
-            ->latest()
-            ->get();
+        $data = IntervalCriteria::latest()->get();
         return DataTables::of($data)
+            ->addColumn('criteria_name', function ($row) {
+                return $row->criteria->name; // Menampilkan nama kriteria
+            })
             ->addColumn('action', function ($row) {
                 $action = "";
                 if (Auth::user()->can('subcriteria.edit')) {
@@ -144,6 +154,6 @@ class SubCriteriaController extends Controller
                 }
                 return $action;
             })
-            ->rawColumns(['criteria_name', 'interval', 'nilai', 'action'])->make('true');
+            ->rawColumns(['criteria_name', 'range', 'value', 'action'])->make('true');
     }
 }
