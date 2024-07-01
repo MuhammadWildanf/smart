@@ -330,7 +330,7 @@ return [
             'icon' => 'fas fa-fw fa-file'
         ],
         [
-            'text' => 'Daftar Mobil',
+            'text' => 'List Mobil',
             'route' => 'list-cars.index',
             'icon' => 'fas fa-fw fa-book'
         ],

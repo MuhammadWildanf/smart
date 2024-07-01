@@ -19,10 +19,6 @@ class listCarController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('list-cars.index')) {
-            abort(403, 'Unauthorized action.');
-        }
-        
         $data = Car::latest()->get();
         return view('list-car.index', compact('data'));
     }
