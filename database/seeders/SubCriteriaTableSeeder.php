@@ -32,6 +32,7 @@ class SubCriteriaTableSeeder extends Seeder
             ['criteria_id' => 3, 'range' => 'Hitam', 'value' => 2],
             ['criteria_id' => 3, 'range' => 'Lainnya', 'value' => 1],
 
+            
             ['criteria_id' => 4, 'range' => '1500', 'value' => 4],
             ['criteria_id' => 4, 'range' => '1498', 'value' => 3],
             ['criteria_id' => 4, 'range' => '1408', 'value' => 2],
