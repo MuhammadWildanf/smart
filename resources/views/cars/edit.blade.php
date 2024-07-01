@@ -61,8 +61,8 @@
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="available_seat" class="form-label">Jumlah Seat <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" name="available_seat" placeholder="Masukkan JUmlah Seat"
+                                <label for="available_seat" class="form-label">Jumlah Kursi <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="available_seat" placeholder="Masukkan Jumlah Kursi"
                                     value="{{ $car->available_seat }}">
                                 @if ($errors->has('available_seat'))
                                     <span class="text-danger">{{ $errors->first('available_seat') }}</span>

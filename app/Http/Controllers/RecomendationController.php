@@ -11,30 +11,37 @@ class RecomendationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Car::when($request->price != "", function ($query, $price) use ($request) {
-            $query->where('price', '>=', $this->getMinValue('price', $request->price));
-            if ($this->getMaxValue('price', $request->price) != null) {
-                $query->where('price', '<=', $this->getMaxValue('price', $request->price));
-            }
-        })->when($request->available_seat != "", function ($query, $available_seat) use ($request) {
-            $query->where('available_seat', $this->getValue('available_seat', $request->available_seat));
-        })->when($request->color != "", function ($query, $color) use ($request) {
-            $query->where('color', $this->getValue('color', $request->color));
-        })->when($request->capacity_machine != "", function ($query, $capacity_machine) use ($request) {
-            $query->where('capacity_machine', $this->getValue('capacity_machine', $request->capacity_machine));
-        });
-        // Ambil query mobil
-        $cars = $query->get();
+        $cars = Car::when($request->price != "", function ($query) use ($request) {
+            $query->where(function ($query) use ($request) {
+                $query->where('price', '>=', $this->getMinValue('price', $request->price));
+                if ($this->getMaxValue('price', $request->price) != null) {
+                    $query->orWhere('price', '<=', $this->getMaxValue('price', $request->price));
+                }
+            });
+        })
+            ->when($request->available_seat != "", function ($query) use ($request) {
+                $query->orWhere('available_seat', $this->getValue('available_seat', $request->available_seat));
+            })
+            ->when($request->color != "", function ($query) use ($request) {
+                $query->orWhere('color', $this->getValue('color', $request->color));
+            })
+            ->when($request->capacity_machine != "", function ($query) use ($request) {
+                $query->orWhere('capacity_machine', $this->getValue('capacity_machine', $request->capacity_machine));
+            })
+            ->get();
 
+
+        // Ambil semua kriteria beserta interval criteria-nya
         $criterias = Criteria::with('intervalCriteria')->get();
 
+        // Inisialisasi array untuk menyimpan interval criteria per kriteria
         $intervalCriteria = [];
         foreach ($criterias as $criteria) {
             $intervalCriteria[$criteria->slug] = $criteria->intervalCriteria;
         }
 
+        // Inisialisasi array untuk menyimpan nilai alternatif per mobil
         $alternatives = [];
-
         foreach ($cars as $car) {
             $car_alternatives = [];
             foreach ($criterias as $criteria) {
@@ -45,18 +52,27 @@ class RecomendationController extends Controller
             $alternatives[$car->code] = $car_alternatives;
         }
 
+        // Inisialisasi array untuk menyimpan nilai min dan max per kriteria
         $minMaxValues = [];
         foreach ($criterias as $criteria) {
             $criterion_slug = $criteria->slug;
             $values = array_column($alternatives, $criterion_slug);
-            $minMaxValues[$criterion_slug] = [
-                'min' => min($values),
-                'max' => max($values)
-            ];
+            // Pastikan ada nilai yang valid sebelum menggunakan min() dan max()
+            if (!empty($values)) {
+                $minMaxValues[$criterion_slug] = [
+                    'min' => min($values),
+                    'max' => max($values)
+                ];
+            } else {
+                // Handle jika tidak ada nilai yang valid
+                $minMaxValues[$criterion_slug] = [
+                    'min' => 0, // atau null, atau nilai default lainnya
+                    'max' => 0 // atau null, atau nilai default lainnya
+                ];
+            }
         }
 
-        // dd($minMaxValues);
-
+        // Normalisasi nilai utilitas berdasarkan min dan max
         foreach ($cars as $car) {
             foreach ($criterias as $criteria) {
                 $criterion_slug = $criteria->slug;
@@ -71,6 +87,7 @@ class RecomendationController extends Controller
                 $alternatives[$car->code][$criterion_slug] = $utility_value;
             }
         }
+
         // Hitung total skor berdasarkan nilai utilitas dan bobot kriteria
         foreach ($cars as $car) {
             $total_score = 0;
@@ -83,6 +100,7 @@ class RecomendationController extends Controller
         // Urutkan mobil berdasarkan total score (descending)
         $cars = $cars->sortByDesc('total_score');
 
+        // Kirim data ke view
         return view('recomendation.index', compact('cars', 'criterias', 'alternatives', 'intervalCriteria'));
     }
 
@@ -118,13 +136,17 @@ class RecomendationController extends Controller
         }
     }
 
-
     private function getMinValue($criteria, $value)
     {
-        $range = IntervalCriteria::where('criteria_id', Criteria::where('slug', $criteria)->first()->id)
+        $intervalCriteria = IntervalCriteria::where('criteria_id', Criteria::where('slug', $criteria)->first()->id)
             ->where('id', $value)
-            ->first()
-            ->range;
+            ->first();
+
+        if (!$intervalCriteria) {
+            return 0; // Handle jika tidak ada range yang sesuai, bisa juga mengembalikan null atau nilai lain yang sesuai
+        }
+
+        $range = $intervalCriteria->range;
 
         // Pisahkan nilai batas bawah dari range
         $parts = explode(' - ', $range);
@@ -139,10 +161,15 @@ class RecomendationController extends Controller
 
     private function getMaxValue($criteria, $value)
     {
-        $range = IntervalCriteria::where('criteria_id', Criteria::where('slug', $criteria)->first()->id)
+        $intervalCriteria = IntervalCriteria::where('criteria_id', Criteria::where('slug', $criteria)->first()->id)
             ->where('id', $value)
-            ->first()
-            ->range;
+            ->first();
+
+        if (!$intervalCriteria) {
+            return null; // Jika tidak ada interval criteria, maka batas atas tidak ada
+        }
+
+        $range = $intervalCriteria->range;
 
         // Pisahkan nilai batas atas dari range
         $parts = explode(' - ', $range);
@@ -157,9 +184,14 @@ class RecomendationController extends Controller
 
     private function getValue($criteria, $value)
     {
-        return IntervalCriteria::where('criteria_id', Criteria::where('slug', $criteria)->first()->id)
+        $intervalCriteria = IntervalCriteria::where('criteria_id', Criteria::where('slug', $criteria)->first()->id)
             ->where('value', $value)
-            ->first()
-            ->range;
+            ->first();
+
+        if (!$intervalCriteria) {
+            return null; // Handle jika tidak ada interval criteria, bisa mengembalikan null atau nilai default lainnya
+        }
+
+        return $intervalCriteria->range;
     }
 }

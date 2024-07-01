@@ -60,8 +60,8 @@
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="available_seat" class="form-label">Jumlah Seat <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" name="available_seat" placeholder="Masukan Jumlah Seat"
+                                <label for="available_seat" class="form-label">Jumlah Kursi <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="available_seat" placeholder="Masukan Jumlah Kursi"
                                     value="{{ old('available_seat') }}">
                                 @if ($errors->has('available_seat'))
                                     <span class="text-danger">{{ $errors->first('available_seat') }}</span>
@@ -102,7 +102,7 @@
                                         <th>Harga</th>
                                         <th>Warna</th>
                                         <th>Kapasitas Mesin</th>
-                                        <th>Jumlah Seat</th>
+                                        <th>Jumlah Kursi</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>

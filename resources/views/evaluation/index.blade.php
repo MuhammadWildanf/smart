@@ -107,7 +107,7 @@
                                         <th>Kode</th>
                                         <th>Nama</th>
                                         <th>Harga</th>
-                                        <th>Jumlah Seat</th>
+                                        <th>Jumlah Kursi</th>
                                         <th>Warna</th>
                                         <th>Kapasitas Mesin</th>
                                         <th>Total Score</th>

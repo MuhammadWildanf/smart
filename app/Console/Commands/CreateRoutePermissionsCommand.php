@@ -32,7 +32,8 @@ class CreateRoutePermissionsCommand extends Command
     {
         $routes = Route::getRoutes()->getRoutes();
         $roleUser = Role::findByName('user'); // Ganti 'user' dengan nama peran yang Anda inginkan
-        $roleAdmin = Role::findByName('superuser'); // Ganti 'user' dengan nama peran yang Anda inginkan
+        $roleSuperuser = Role::findByName('superuser'); // Ganti 'user' dengan nama peran yang Anda inginkan
+        $roleManager = Role::findByName('manager'); // Ganti 'user' dengan nama peran yang Anda inginkan
         $p = [
             'dashboard',
             'login',
@@ -66,6 +67,55 @@ class CreateRoutePermissionsCommand extends Command
             'hasil-akhir.destroy',
         ];
 
+        $superuserPermissions = [
+            'dashboard',
+            'history.index',
+            'evaluation.index',
+            'evaluation.create',
+            'evaluation.store',
+            'evaluation.show',
+            'evaluation.edit',
+            'evaluation.update',
+            'evaluation.destroy',
+            'subcriteria.update',
+            'subcriteria.destroy',
+            'subcriteria.create',
+            'subcriteria.store',
+            'subcriteria.index',
+            'criteria.destroy',
+            'criteria.create',
+            'criteria.store',
+            'criteria.index',
+            'cars.destroy',
+            'cars.create',
+            'cars.store',
+            'cars.index',
+            'cars.show',
+            'cars.edit',
+            'cars.update',
+            'users.index',
+            'users.create',
+            'users.store',
+            'users.show',
+            'users.edit',
+            'users.update',
+            'users.destroy',
+            'users.roles.index',
+            'users.roles.create',
+            'users.roles.store',
+            'users.roles.show',
+            'users.roles.edit',
+            'users.roles.update',
+            'users.roles.destroy',
+            'users.permissions.index',
+            'users.permissions.create',
+            'users.permissions.store',
+            'users.permissions.show',
+            'users.permissions.edit',
+            'users.permissions.update',
+            'users.permissions.destroy',
+        ];
+
         foreach($routes as $route)
         {
             if($route->getName() !='' && $route->getAction()['middleware'][0]=='web')
@@ -83,7 +133,18 @@ class CreateRoutePermissionsCommand extends Command
                     }
                 }
 
-                $roleAdmin->givePermissionTo($permission);
+                if (in_array($permission->name, $superuserPermissions)) {
+                    // Assign permission to the role "superuser"
+                    if (!$roleSuperuser->hasPermissionTo($permission)) {
+                        $roleSuperuser->givePermissionTo($permission);
+                    }
+                }
+
+                if (in_array($permission->name, ['dashboard', 'history.index'])) {
+                    if (!$roleManager->hasPermissionTo($permission)) {
+                        $roleManager->givePermissionTo($permission);
+                    }
+                }
             }
         }
 

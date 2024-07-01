@@ -23,7 +23,7 @@
                             </div>
                             <div class="col-md-6">
                                 <p><strong>Harga:</strong> {{ $car->price }}</p>
-                                <p><strong>Jumlah Seat:</strong> {{ $car->available_seat }}</p>
+                                <p><strong>Jumlah Kursi:</strong> {{ $car->available_seat }}</p>
                                 <p><strong>Warna:</strong> {{ $car->color }}</p>
                                 <p><strong>Kapasitas Mesin:</strong> {{ $car->capacity_machine }}</p>
                             </div>
