@@ -30,6 +30,7 @@ class EvaluationController extends Controller
             $alternatives[$car->code] = $car_alternatives;
         }
 
+        // dd($alternatives);
         $minMaxValues = [];
         foreach ($criterias as $criteria) {
             $criterion_slug = $criteria->slug;
@@ -84,6 +85,8 @@ class EvaluationController extends Controller
                     return $interval->value;
                 }
             } elseif ($value == (int) $range[0] || $value == $range[0]) {
+                return $interval->value;
+            } elseif ($interval->range == 'Lainnya') {
                 return $interval->value;
             }
         }

@@ -18,15 +18,15 @@ class CarSeeder extends Seeder
     {
         $cars = [
             [
-                'name' => 'Brio',
+                'name' => 'Brio Satya',
                 'code' => 'P1',
                 'price' => 157600000,
                 'available_seat' => 5,
-                'color' => 'kuning',
+                'color' => 'Kuning',
                 'capacity_machine' => 1199,
             ],
             [
-                'name' => 'Hr-v',
+                'name' => 'HR-V',
                 'code' => 'P2',
                 'price' => 383900000,
                 'available_seat' => 5,
@@ -34,7 +34,7 @@ class CarSeeder extends Seeder
                 'capacity_machine' => 1498,
             ],
             [
-                'name' => 'Brv',
+                'name' => 'BR-V',
                 'code' => 'P3',
                 'price' => 285000000,
                 'available_seat' => 8,
@@ -50,11 +50,11 @@ class CarSeeder extends Seeder
                 'capacity_machine' => 1500,
             ],
             [
-                'name' => 'Wrv',
+                'name' => 'WR-V',
                 'code' => 'P5',
                 'price' => 274900000,
                 'available_seat' => 5,
-                'color' => 'merah',
+                'color' => 'Merah',
                 'capacity_machine' => 1498,
             ],
             [
@@ -66,7 +66,7 @@ class CarSeeder extends Seeder
                 'capacity_machine' => 1498,
             ],
             [
-                'name' => 'Cr-v',
+                'name' => 'CR-V',
                 'code' => 'P7',
                 'price' => 749100000,
                 'available_seat' => 5,
@@ -86,16 +86,16 @@ class CarSeeder extends Seeder
                 'code' => 'P9',
                 'price' => 959900000,
                 'available_seat' => 5,
-                'color' => 'Platinum white pearl',
+                'color' => 'Platinum White Pearl',
                 'capacity_machine' => 1993,
             ],
             [
-                'name' => 'Cr-v',
+                'name' => 'Brio RS',
                 'code' => 'P10',
-                'price' => 749100000,
+                'price' => 243100000,
                 'available_seat' => 5,
-                'color' => 'Canyon River Blue Metallic',
-                'capacity_machine' => 1993,
+                'color' => 'Kuning',
+                'capacity_machine' => 1200,
             ],
         ];
 

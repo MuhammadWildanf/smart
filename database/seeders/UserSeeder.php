@@ -17,13 +17,13 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        $superuser = User::create([
-            'name' => 'Superuser', 
-            'email' => 'superuser@gmail.com', 
+        $administrator = User::create([
+            'name' => 'Administrator', 
+            'email' => 'administrator@gmail.com', 
             'password' => 'password'
         ]);
-        $superRole = Role::create(['name' => 'superuser']); 
-        $superuser->assignRole([$superRole->id]);
+        $superRole = Role::create(['name' => 'administrator']); 
+        $administrator->assignRole('administrator');
         
         
         $user = User::create([
@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
         ]);
     
         $userRole = Role::create(['name' => 'user']); 
-        $user->assignRole([$userRole->id]);
+        $user->assignRole('user');
         
         $manager = User::create([
             'name' => 'Manager', 
@@ -42,6 +42,6 @@ class UserSeeder extends Seeder
         ]);
     
         $managerRole = Role::create(['name' => 'manager']); 
-        $manager->assignRole([$managerRole->id]);
+        $manager->assignRole('manager');
     }
 }

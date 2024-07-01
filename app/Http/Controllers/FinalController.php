@@ -2,18 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\History;
+use App\Models\HistoryDetail;
 use Illuminate\Http\Request;
 
 class FinalController extends Controller
 {
-
-    protected $recomendationController;
-
-    public function __construct(RecomendationController $recomendationController)
-    {
-        $this->recomendationController = $recomendationController;
-    }
-
 
     /**
      * Display a listing of the resource.
@@ -22,9 +16,17 @@ class FinalController extends Controller
      */
     public function index()
     {
-        $hasil_perhitungan = session('hasil_perhitungan');
+        $latestHistoryIds = History::where('user_id', auth()->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(1)
+            ->pluck('id');
 
-    return view('final.index', compact('hasil_perhitungan'));
+        $histories = HistoryDetail::whereIn('history_id', $latestHistoryIds)
+            ->with(['history.user', 'car'])
+            ->get();
+
+        // dd($histories);
+        return view('history.index', compact('histories'));
     }
 
     /**

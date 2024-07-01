@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\history;
+use App\Models\HistoryDetail;
 use Illuminate\Http\Request;
 
 class HistoryUserController extends Controller
@@ -14,7 +15,11 @@ class HistoryUserController extends Controller
      */
     public function index()
     {
-        return view('history.index');
+        $histories = HistoryDetail::with(['history' => function ($query) {
+            $query->orderBy('created_at', 'desc');
+        }, 'history.user', 'car'])->get();
+
+        return view('history.index', compact('histories'));
     }
 
     /**

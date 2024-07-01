@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Car;
 use App\Models\Criteria;
+use App\Models\History;
 use App\Models\IntervalCriteria;
 use Illuminate\Http\Request;
 
@@ -11,25 +12,46 @@ class RecomendationController extends Controller
 {
     public function index(Request $request)
     {
-        $cars = Car::when($request->price != "", function ($query) use ($request) {
-            $query->where(function ($query) use ($request) {
+        $filter = false;
+        $knownColors = IntervalCriteria::where('criteria_id', Criteria::where('slug', 'color')->first()->id)->whereNot('range', 'Lainnya')->get();
+        $cars = Car::query();
+
+        if ($request->price != "") {
+            $cars->where(function ($query) use ($request) {
                 $query->where('price', '>=', $this->getMinValue('price', $request->price));
                 if ($this->getMaxValue('price', $request->price) != null) {
                     $query->orWhere('price', '<=', $this->getMaxValue('price', $request->price));
                 }
-            });
-        })
-            ->when($request->available_seat != "", function ($query) use ($request) {
-                $query->orWhere('available_seat', $this->getValue('available_seat', $request->available_seat));
-            })
-            ->when($request->color != "", function ($query) use ($request) {
-                $query->orWhere('color', $this->getValue('color', $request->color));
-            })
-            ->when($request->capacity_machine != "", function ($query) use ($request) {
-                $query->orWhere('capacity_machine', $this->getValue('capacity_machine', $request->capacity_machine));
-            })
-            ->get();
 
+            });
+            
+            $filter = true;
+        }
+
+        if ($request->available_seat != "") {
+            $cars->orWhere('available_seat', $this->getValue('available_seat', $request->available_seat));
+            $filter = true;
+        }
+
+        if ($request->color != "") {
+            $colorKnown = $knownColors->pluck('range')->toArray();
+            if ($this->getValue('color', $request->color) == 'Lainnya') {
+                $cars->orWhereNotIn('color', $colorKnown);
+            } else {
+                $cars->orWhere('color', $this->getValue('color', $request->color));
+            }
+
+            $filter = true;
+        }
+
+        if ($request->capacity_machine != "") {
+            $cars->orWhere('capacity_machine', $this->getValue('capacity_machine', $request->capacity_machine));
+            $filter = true;
+        }
+
+        $cars = $cars->get();
+
+        // dd($cars);
 
         // Ambil semua kriteria beserta interval criteria-nya
         $criterias = Criteria::with('intervalCriteria')->get();
@@ -40,6 +62,7 @@ class RecomendationController extends Controller
             $intervalCriteria[$criteria->slug] = $criteria->intervalCriteria;
         }
 
+        // dd($intervalCriteria);
         // Inisialisasi array untuk menyimpan nilai alternatif per mobil
         $alternatives = [];
         foreach ($cars as $car) {
@@ -100,6 +123,11 @@ class RecomendationController extends Controller
         // Urutkan mobil berdasarkan total score (descending)
         $cars = $cars->sortByDesc('total_score');
 
+        // dd($filter);
+        if ($filter) {
+            $this->saveHistory($cars);
+        }
+
         // Kirim data ke view
         return view('recomendation.index', compact('cars', 'criterias', 'alternatives', 'intervalCriteria'));
     }
@@ -117,6 +145,8 @@ class RecomendationController extends Controller
                     return $interval->value;
                 }
             } elseif ($value == (int) $range[0] || $value == $range[0]) {
+                return $interval->value;
+            } elseif ($interval->range == 'Lainnya') {
                 return $interval->value;
             }
         }
@@ -193,5 +223,26 @@ class RecomendationController extends Controller
         }
 
         return $intervalCriteria->range;
+    }
+
+    public function saveHistory($cars)
+    {
+        // dd($cars);
+        $history = History::create([
+            'user_id' => auth()->user()->id
+        ]);
+
+        $ranking = 1;
+
+        foreach ($cars as $car) {
+            $detail = $history->details()->create([
+                'car_id' => $car->id,
+                'total_score' => $car->total_score,
+                'ranking' => $ranking
+            ]);
+
+            $ranking++;
+        }
+
     }
 }

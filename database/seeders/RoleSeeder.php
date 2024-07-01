@@ -1,40 +1,22 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Database\Seeders;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-class CreateRoutePermissionsCommand extends Command
+class RoleSeeder extends Seeder
 {
     /**
-     * The name and signature of the console command.
+     * Run the database seeds.
      *
-     * @var string
+     * @return void
      */
-    protected $signature = 'permission:generate';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Permission Generate And Save to DB';
-
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
-    public function handle()
+    public function run()
     {
-        $routes = Route::getRoutes()->getRoutes();
-        $roleUser = Role::findByName('user'); 
-        $roleSuperuser = Role::findByName('superuser'); 
-        $roleManager = Role::findByName('manager'); 
-        $p = [
+        $userPermissions = [
             'dashboard',
             'login',
             'logout',
@@ -67,12 +49,7 @@ class CreateRoutePermissionsCommand extends Command
             'hasil-akhir.destroy',
         ];
 
-        $managerPermissions = [
-            'dashboard',
-            'history.index',
-        ];
-
-        $superuserPermissions = [
+        $administratorPermissions = [
             'dashboard',
             'history.index',
             'evaluation.index',
@@ -126,33 +103,24 @@ class CreateRoutePermissionsCommand extends Command
             'users.permissions.destroy',
         ];
 
-        foreach ($routes as $route) {
-            if ($route->getName() != '' && $route->getAction()['middleware'][0] == 'web') {
-                $permission = Permission::where('name', $route->getName())->first();
-                if (is_null($permission)) {
-                    $permission = permission::create(['name' => $route->getName()]);
-                }
+        $managerPermissions = [
+            'dashboard',
+            'history.index',
+        ];
 
-                if (in_array($permission->name, $superuserPermissions)) {
-                    if (!$roleSuperuser->hasPermissionTo($permission)) {
-                        $roleSuperuser->givePermissionTo($permission);
-                    }
-                }
-
-                if (in_array($permission->name, ['dashboard', 'history.index'])) {
-                    if (!$roleManager->hasPermissionTo($permission)) {
-                        $roleManager->givePermissionTo($permission);
-                    }
-                }
-
-                if (in_array($permission->name, $p)) {
-                    if (!$roleUser->hasPermissionTo($permission)) {
-                        $roleUser->givePermissionTo($permission);
-                    }
-                }
-            }
+        $allPermissions = array_merge($userPermissions, $administratorPermissions, $managerPermissions);
+        foreach ($allPermissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
-        $this->info('Permission Route Added Successfully');
+        // Buat Peran dan Tetapkan Izin
+        $roleUser = Role::firstOrCreate(['name' => 'user']);
+        $roleUser->syncPermissions($userPermissions);
+
+        $roleSuperuser = Role::firstOrCreate(['name' => 'administrator']);
+        $roleSuperuser->syncPermissions($administratorPermissions);
+
+        $roleManager = Role::firstOrCreate(['name' => 'manager']);
+        $roleManager->syncPermissions($managerPermissions);
     }
 }

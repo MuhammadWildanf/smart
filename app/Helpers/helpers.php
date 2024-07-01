@@ -16,6 +16,8 @@ if(!function_exists('getIntervalValue')){
                 }
             } elseif ($value == (int)$range[0] || $value == $range[0]) {
                 return $interval->value;
+            } elseif ($interval->range == 'Lainnya') {
+                return $interval->value;
             }
         }
         return 0;
