@@ -31,9 +31,9 @@ class CreateRoutePermissionsCommand extends Command
     public function handle()
     {
         $routes = Route::getRoutes()->getRoutes();
-        $roleUser = Role::findByName('user'); // Ganti 'user' dengan nama peran yang Anda inginkan
-        $roleSuperuser = Role::findByName('superuser'); // Ganti 'user' dengan nama peran yang Anda inginkan
-        $roleManager = Role::findByName('manager'); // Ganti 'user' dengan nama peran yang Anda inginkan
+        $roleUser = Role::findByName('user'); 
+        $roleSuperuser = Role::findByName('superuser'); 
+        $roleManager = Role::findByName('manager'); 
         $p = [
             'dashboard',
             'login',
@@ -82,6 +82,11 @@ class CreateRoutePermissionsCommand extends Command
             'subcriteria.create',
             'subcriteria.store',
             'subcriteria.index',
+            'subcriteria.show',
+            'subcriteria.edit',
+            'criteria.update',
+            'criteria.edit',
+            'criteria.show',
             'criteria.destroy',
             'criteria.create',
             'criteria.store',
@@ -116,25 +121,14 @@ class CreateRoutePermissionsCommand extends Command
             'users.permissions.destroy',
         ];
 
-        foreach($routes as $route)
-        {
-            if($route->getName() !='' && $route->getAction()['middleware'][0]=='web')
-            {
+        foreach ($routes as $route) {
+            if ($route->getName() != '' && $route->getAction()['middleware'][0] == 'web') {
                 $permission = Permission::where('name', $route->getName())->first();
-                if(is_null($permission))
-                {
+                if (is_null($permission)) {
                     $permission = permission::create(['name' => $route->getName()]);
                 }
 
-                if (in_array($permission->name, $p)) {
-                    // Assign permission to the role
-                    if (!$roleUser->hasPermissionTo($permission)) {
-                        $roleUser->givePermissionTo($permission);
-                    }
-                }
-
                 if (in_array($permission->name, $superuserPermissions)) {
-                    // Assign permission to the role "superuser"
                     if (!$roleSuperuser->hasPermissionTo($permission)) {
                         $roleSuperuser->givePermissionTo($permission);
                     }
@@ -143,6 +137,12 @@ class CreateRoutePermissionsCommand extends Command
                 if (in_array($permission->name, ['dashboard', 'history.index'])) {
                     if (!$roleManager->hasPermissionTo($permission)) {
                         $roleManager->givePermissionTo($permission);
+                    }
+                }
+
+                if (in_array($permission->name, $p)) {
+                    if (!$roleUser->hasPermissionTo($permission)) {
+                        $roleUser->givePermissionTo($permission);
                     }
                 }
             }

@@ -255,7 +255,7 @@ return [
     */
 
     'use_route_url' => false,
-    'dashboard_url' => 'home',
+    'dashboard_url' => 'dashboard',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => 'register',
@@ -330,7 +330,7 @@ return [
             'icon' => 'fas fa-fw fa-file'
         ],
         [
-            'text' => 'Daftar Mobil',
+            'text' => 'List Mobil',
             'route' => 'list-cars.index',
             'icon' => 'fas fa-fw fa-book'
         ],
