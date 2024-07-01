@@ -27,22 +27,14 @@ class SubCriteriaTableSeeder extends Seeder
             ['criteria_id' => 2, 'range' => '4-5', 'value' => 2],
             ['criteria_id' => 2, 'range' => '2-3', 'value' => 1],
 
-            ['criteria_id' => 3, 'range' => 'Hitam', 'value' => 8],
-            ['criteria_id' => 3, 'range' => 'Silver', 'value' => 7],
-            ['criteria_id' => 3, 'range' => 'Merah', 'value' => 6],
-            ['criteria_id' => 3, 'range' => 'Biru', 'value' => 5],
             ['criteria_id' => 3, 'range' => 'Putih', 'value' => 4],
             ['criteria_id' => 3, 'range' => 'Pearl Gray Metallic', 'value' => 3],
             ['criteria_id' => 3, 'range' => 'Hitam', 'value' => 2],
             ['criteria_id' => 3, 'range' => 'Lainnya', 'value' => 1],
 
-            ['criteria_id' => 4, 'range' => '2500', 'value' => 8],
-            ['criteria_id' => 4, 'range' => '1800', 'value' => 7],
-            ['criteria_id' => 4, 'range' => '1500', 'value' => 6],
-            ['criteria_id' => 4, 'range' => '1498', 'value' => 5],
-            ['criteria_id' => 4, 'range' => '1408', 'value' => 4],
-            ['criteria_id' => 4, 'range' => '1300', 'value' => 3],
-            ['criteria_id' => 4, 'range' => '1200', 'value' => 2],
+            ['criteria_id' => 4, 'range' => '1500', 'value' => 4],
+            ['criteria_id' => 4, 'range' => '1498', 'value' => 3],
+            ['criteria_id' => 4, 'range' => '1408', 'value' => 2],
             ['criteria_id' => 4, 'range' => '1199', 'value' => 1],
         ]);
     }
