@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Car;
 use App\Models\history;
 use App\Models\HistoryDetail;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class HistoryUserController extends Controller
@@ -13,14 +15,34 @@ class HistoryUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $histories = HistoryDetail::with(['history' => function ($query) {
-            $query->orderBy('created_at', 'desc');
-        }, 'history.user', 'car'])->get();
+        $query = HistoryDetail::with(['history.user', 'car']);
 
-        return view('history.index', compact('histories'));
+        if ($request->filled('user_id')) {
+            $query->whereHas('history', function ($q) use ($request) {
+                $q->where('user_id', $request->user_id);
+            });
+        }
+
+        if ($request->filled('car_id')) {
+            $query->where('car_id', $request->car_id);
+        }
+
+        if ($request->filled('created_at')) {
+            $query->whereHas('history', function ($q) use ($request) {
+                $q->whereDate('created_at', $request->created_at);
+            });
+        }
+
+        $histories = $query->get();
+        $users = User::all();
+        $cars = Car::all();
+
+        return view('history.index', compact('histories', 'users','cars'));
     }
+
+
 
     /**
      * Show the form for creating a new resource.

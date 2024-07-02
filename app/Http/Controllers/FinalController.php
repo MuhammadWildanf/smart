@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\History;
 use App\Models\HistoryDetail;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class FinalController extends Controller
 {
@@ -28,6 +30,24 @@ class FinalController extends Controller
         // dd($histories);
         return view('history.index', compact('histories'));
     }
+
+    public function download()
+    {
+        $latestHistoryIds = History::where('user_id', auth()->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(1)
+            ->pluck('id');
+
+        $histories = HistoryDetail::whereIn('history_id', $latestHistoryIds)
+            ->with(['history.user', 'car'])
+            ->get();
+
+        $pdf = PDF::loadView('history.download', compact('histories'));
+
+        return $pdf->download('Laporan-Hasil-Akhir.pdf');
+    }
+
+
 
     /**
      * Show the form for creating a new resource.

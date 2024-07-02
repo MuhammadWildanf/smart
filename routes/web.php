@@ -45,5 +45,6 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     Route::resource('recomendation', RecomendationController::class);
     Route::post('recomendation/calculate', [RecomendationController::class, 'calculate'])->name('recomendation.calculate');
     Route::resource('hasil-akhir', FinalController::class);
+    Route::get('hasil-akhir/download', [FinalController::class, 'download'])->name('hasil-akhir.download');
     Route::resource('history', HistoryUserController::class);
 });
