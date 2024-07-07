@@ -350,28 +350,33 @@ return [
             'icon' => 'fas fa-fw fa-clock'
         ],
         [
-            'text'        => 'Users',
-            'icon'        => 'fas fa-fw fa-users',
-            'route'         => 'users.index',
-            'submenu'      => [
-                [
-                    'text' => 'All',
-                    'route' => 'users.index',
-                    'active' => ['users', 'users/*'],
-                ],
-                [
-                    'text' => 'Roles',
-                    'route' => 'users.roles.index',
-                    'active' => ['users/roles/*'],
-                ],
-                [
-                    'text' => 'Permissions',
-                    'route' => 'users.permissions.index',
-                    'active' => ['users/permissions/*'],
-                ],
-            ]
-
+            'text' => 'Users',
+            'route' => 'users.index',
+            'icon' => 'fas fa-fw fa-users'
         ],
+        // [
+        //     'text'        => 'Users',
+        //     'icon'        => 'fas fa-fw fa-users',
+        //     'route'         => 'users.index',
+        //     'submenu'      => [
+        //         [
+        //             'text' => 'All',
+        //             'route' => 'users.index',
+        //             'active' => ['users', 'users/*'],
+        //         ],
+        //         [
+        //             'text' => 'Roles',
+        //             'route' => 'users.roles.index',
+        //             'active' => ['users/roles/*'],
+        //         ],
+        //         // [
+        //         //     'text' => 'Permissions',
+        //         //     'route' => 'users.permissions.index',
+        //         //     'active' => ['users/permissions/*'],
+        //         // ],
+        //     ]
+
+        // ],
         // ['header' => 'account_settings'],
         [
             'text' => 'profile',

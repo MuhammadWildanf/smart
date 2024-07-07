@@ -10,78 +10,7 @@
     <div class="container-fluid">
         <div class="row">
             <div id="errorBox"></div>
-            <div class="col-3">
-                <form method="POST" action="{{ route('criteria.store') }}">
-                    @csrf
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <h5>Add New</h5>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="code" class="form-label">kode <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="code" placeholder="ex: C1"
-                                    value="{{ old('code') }}">
-                                @if ($errors->has('code'))
-                                    <span class="text-danger">{{ $errors->first('code') }}</span>
-                                @endif
-                            </div>
-                            <div class="form-group">
-                                <label for="name" class="form-label">Nama <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="name"
-                                    placeholder="Masukan Nama kriteria" value="{{ old('name') }}">
-                                @if ($errors->has('name'))
-                                    <span class="text-danger">{{ $errors->first('name') }}</span>
-                                @endif
-                            </div>
-                            <div class="form-group">
-                                <label for="slug" class="form-label">Slug <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="slug" placeholder="Masukan Nama Slug"
-                                    value="{{ old('slug') }}">
-                                @if ($errors->has('slug'))
-                                    <span class="text-danger">{{ $errors->first('slug') }}</span>
-                                @endif
-                            </div>
-                            <div class="form-group">
-                                <label for="bobot" class="form-label">Bobot <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="bobot" placeholder="Masukan bobot"
-                                    value="{{ old('bobot') }}">
-                                @if ($errors->has('bobot'))
-                                    <span class="text-danger">{{ $errors->first('bobot') }}</span>
-                                @endif
-                            </div>
-                            <div class="form-group">
-                                <label for="normalisasi" class="form-label">Normalisasi <span
-                                        class="text-danger">*</span></label>
-                                <input type="number" class="form-control" name="normalisasi" step="0.01" min="0"
-                                    max="1" placeholder="Masukan kriteria" value="{{ old('normalisasi') }}">
-                                @if ($errors->has('normalisasi'))
-                                    <span class="text-danger">{{ $errors->first('normalisasi') }}</span>
-                                @endif
-                            </div>
-                            <div class="form-group">
-                                <label for="type" class="form-label">Type</label>
-                                <select class="form-control" name="type">
-                                    <option value="">Pilih Type</option>
-                                    <option value="cost" {{ old('type') == 'cost' ? 'selected' : '' }}>Cost</option>
-                                    <option value="benefit" {{ old('type') == 'benefit' ? 'selected' : '' }}>Benefit
-                                    </option>
-                                </select>
-                                @error('type')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="col-9">
+            <div class="col">
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">
