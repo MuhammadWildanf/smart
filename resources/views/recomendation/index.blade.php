@@ -19,64 +19,25 @@
                     <div class="card-body">
                         <form method="GET" id="form-filter" action="{{ route('recomendation.index') }}">
                             <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="price">Harga:</label>
-                                        <select name="price" id="price" class="form-control">
-                                            <option value="">Semua</option>
-                                            @foreach ($intervalCriteria['price'] as $interval)
-                                                <option @if (old('price') == $interval->id) selected @endif
-                                                    value="{{ $interval->id }}">
-                                                    {{ $interval->range }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                @foreach ($criterias as $criteria)
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="{{$criteria->slug}}">{{ $criteria->name }}:</label>
+                                            <select name="{{$criteria->slug}}" id="{{$criteria->slug}}" class="form-control">
+                                                <option value="">Semua</option>
+                                                @foreach ($intervalCriteria[$criteria->slug] as $interval)
+                                                    <option @if (old($criteria->slug) == $interval->id) selected @endif
+                                                        value="{{ $interval->id }}">
+                                                        {{ $interval->range }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="available_seat">Jumlah Kursi:</label>
-                                        <select name="available_seat" id="available_seat" class="form-control">
-                                            <option value="">Semua</option>
-                                            @foreach ($intervalCriteria['available_seat'] as $interval)
-                                                <option @if (old('available_seat') == $interval->id) selected @endif
-                                                    value="{{ $interval->value }}">
-                                                    {{ $interval->range }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="color">Warna:</label>
-                                        <select name="color" id="color" class="form-control">
-                                            <option value="">Semua</option>
-                                            @foreach ($intervalCriteria['color'] as $interval)
-                                                <option @if (old('color') == $interval->value) selected @endif
-                                                    value="{{ $interval->value }}">
-                                                    {{ $interval->range }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="capacity_machine">Kapasitas Mesin:</label>
-                                        <select name="capacity_machine" id="capacity_machine" class="form-control">
-                                            <option value="">Semua</option>
-                                            @foreach ($intervalCriteria['capacity_machine'] as $interval)
-                                                <option @if (old('capacity_machine') == $interval->value) selected @endif
-                                                    value="{{ $interval->value }}">
-                                                    {{ $interval->range }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
+                                @endforeach
+
                             </div>
-                            <button type="submit" class="btn btn-primary btn-sm mt-3">Filter</button>
+                            <button type="submit" class="btn btn-primary btn-sm mt-3">Firman</button>
                         </form>
                     </div>
                 </div>

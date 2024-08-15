@@ -12,7 +12,7 @@
     <h3>
         <center>Laporan Data Mobil</center>
     </h3>
-    <table border="1" cellspacing="0" cellpadding="5">
+    <table style="width:100%" border="1" cellspacing="0" cellpadding="5">
         <tr>
             @hasrole('administrator|manager')
                 <th>User</th>

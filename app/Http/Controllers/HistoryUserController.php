@@ -76,7 +76,7 @@ class HistoryUserController extends Controller
         }
 
         // return view('history.download', compact('histories'));
-        $pdf = PDF::loadView('history.download', compact('histories'));
+        $pdf = PDF::loadView('history.download', compact('histories'))->setPaper('a4', 'landscape');
 
         return $pdf->download('Laporan-Hasil-Akhir.pdf');
     }

@@ -16,6 +16,7 @@ class RecomendationController extends Controller
         $knownColors = IntervalCriteria::where('criteria_id', Criteria::where('slug', 'color')->first()->id)->whereNot('range', 'Lainnya')->get();
         $cars = Car::query();
 
+        // dd($request->all());
         $cars->where(function ($query) use ($request, $knownColors, &$filter) {
             $subQuery = false;
 
@@ -73,6 +74,7 @@ class RecomendationController extends Controller
         }
 
         // dd($intervalCriteria);
+
         // Inisialisasi array untuk menyimpan nilai alternatif per mobil
         $alternatives = [];
         foreach ($cars as $car) {
@@ -228,6 +230,7 @@ class RecomendationController extends Controller
             ->where('value', $value)
             ->first();
 
+        // dd($criteria, $value, $intervalCriteria);
         if (!$intervalCriteria) {
             return null; // Handle jika tidak ada interval criteria, bisa mengembalikan null atau nilai default lainnya
         }
