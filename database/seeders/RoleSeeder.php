@@ -50,6 +50,7 @@ class RoleSeeder extends Seeder
             'hasil-akhir.update',
             'hasil-akhir.destroy',
             'hasil-akhir.download',
+            'dashboard.getDataChart'
         ];
 
         $administratorPermissions = [
@@ -105,12 +106,14 @@ class RoleSeeder extends Seeder
             'users.permissions.edit',
             'users.permissions.update',
             'users.permissions.destroy',
+            'dashboard.getDataChart'
         ];
 
         $managerPermissions = [
             'dashboard',
             'history.index',
             'history.download',
+            'dashboard.getDataChart'
         ];
 
         $allPermissions = array_merge($userPermissions, $administratorPermissions, $managerPermissions);
