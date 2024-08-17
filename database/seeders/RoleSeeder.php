@@ -113,7 +113,9 @@ class RoleSeeder extends Seeder
             'dashboard',
             'history.index',
             'history.download',
-            'dashboard.getDataChart'
+            'dashboard.getDataChart',
+            'list-cars.index',
+            'evaluation.index',
         ];
 
         $allPermissions = array_merge($userPermissions, $administratorPermissions, $managerPermissions);
