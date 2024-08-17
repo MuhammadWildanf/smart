@@ -22,8 +22,9 @@
                                 @foreach ($criterias as $criteria)
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="{{$criteria->slug}}">{{ $criteria->name }}:</label>
-                                            <select name="{{$criteria->slug}}" id="{{$criteria->slug}}" class="form-control">
+                                            <label for="{{ $criteria->slug }}">{{ $criteria->name }}:</label>
+                                            <select name="{{ $criteria->slug }}" id="{{ $criteria->slug }}"
+                                                class="form-control">
                                                 <option value="">Semua</option>
                                                 @foreach ($intervalCriteria[$criteria->slug] as $interval)
                                                     <option @if (old($criteria->slug) == $interval->id) selected @endif

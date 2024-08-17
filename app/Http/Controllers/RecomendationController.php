@@ -13,7 +13,10 @@ class RecomendationController extends Controller
     public function index(Request $request)
     {
         $filter = false;
-        $knownColors = IntervalCriteria::where('criteria_id', Criteria::where('slug', 'color')->first()->id)->whereNot('range', 'Lainnya')->get();
+        $knownColors = [];
+        if ($color = Criteria::where('slug', 'color')->first()) {
+            $knownColors = IntervalCriteria::where('criteria_id', $color->id)->whereNot('range', 'Lainnya')->get();
+        }
         $cars = Car::query();
 
         // dd($request->all());

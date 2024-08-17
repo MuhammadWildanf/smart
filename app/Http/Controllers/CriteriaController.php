@@ -146,6 +146,6 @@ class CriteriaController extends Controller
                 }
                 return $action;
             })
-            ->rawColumns(['id','code', 'name','slug', 'bobot','normalisasi','type', 'action'])->make('true');
+            ->rawColumns(['id', 'code', 'name', 'slug', 'bobot', 'normalisasi', 'type', 'action'])->make('true');
     }
 }

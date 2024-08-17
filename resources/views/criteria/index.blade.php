@@ -14,7 +14,11 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">
-                            <h5>List</h5>
+                            <h5 class="">List</h5>
+                            {{-- <div class="">
+                                <a class="btn btn-primary m-0" href="{{ route('criteria.create') }}"><i
+                                        class="fas fa-plus"></i> Add</a>
+                            </div> --}}
                         </div>
                     </div>
                     <div class="card-body">
