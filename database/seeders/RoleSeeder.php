@@ -115,6 +115,7 @@ class RoleSeeder extends Seeder
             'history.download',
             'dashboard.getDataChart',
             'list-cars.index',
+            'list-cars.show',
             'evaluation.index',
         ];
 
