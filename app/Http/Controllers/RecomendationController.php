@@ -36,7 +36,12 @@ class RecomendationController extends Controller
             }
 
             if ($request->available_seat != "") {
-                $query->orWhere('available_seat', $this->getValue('available_seat', $request->available_seat));
+                $query->orWhere(function ($subQuery) use ($request) {
+                    $subQuery->where('available_seat', '>=', $this->getMinValue('available_seat', $request->available_seat));
+                    if ($this->getMaxValue('available_seat', $request->available_seat) != null) {
+                        $subQuery->where('available_seat', '<=', $this->getMaxValue('available_seat', $request->available_seat));
+                    }
+                });
                 $subQuery = true;
                 $filter = true;
             }
@@ -196,6 +201,7 @@ class RecomendationController extends Controller
 
         // Pisahkan nilai batas bawah dari range
         $parts = explode(' - ', $range);
+        // dd($parts);
         if (count($parts) == 2) {
             return (int) str_replace('.', '', $parts[0]);
         } elseif (substr($range, 0, 1) == '>') {
@@ -231,7 +237,7 @@ class RecomendationController extends Controller
     private function getValue($criteria, $value)
     {
         $intervalCriteria = IntervalCriteria::where('criteria_id', Criteria::where('slug', $criteria)->first()->id)
-            ->where('value', $value)
+            ->where('id', $value)
             ->first();
 
         // dd($criteria, $value, $intervalCriteria);
