@@ -28,7 +28,7 @@
                                                 <option value="">Semua</option>
                                                 @foreach ($intervalCriteria[$criteria->slug] as $interval)
                                                     <option @if (old($criteria->slug) == $interval->id) selected @endif
-                                                        value="{{ $interval->id }}">
+                                                        value="{{ $interval->value }}">
                                                         {{ $interval->range }}
                                                     </option>
                                                 @endforeach
